@@ -1,0 +1,17 @@
+{
+	"name": "azadkuh/qhttp",
+	"description": "a light-weight and asynchronous HTTP library (both server & client) in Qt5 and c++14",
+	"keywords": ["Qt", "C++", "HTTP"],
+	"authors": [
+		{
+			"name": "azadkuh",
+			"homepage": "https://github.com/azadkuh"
+		}
+	],
+	"require": {
+		"nodejs/http-parser": "v2.7.0"
+	},
+  "repositories": {
+    "nodejs/http-parser": "https://github.com"
+  }
+}

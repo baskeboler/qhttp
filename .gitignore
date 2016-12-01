@@ -6,6 +6,9 @@ build/
 docs/
 res/keys
 res/
+vendor
+build.properties
+commit-*
 TODO.md
 
 # vim/neovim / YouCompleteMe
