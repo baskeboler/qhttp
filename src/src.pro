@@ -6,7 +6,7 @@ PRJDIR       = ..
 include($$PRJDIR/commondir.pri)
 $$setLibPath()
 
-VENDORNAME=azadkuh
+VENDORNAME=oliviermaridat
 APPNAME=qhttp
 TARGET = $$getLibName($$APPNAME, "Qt")
 TEMPLATE = lib
@@ -15,7 +15,7 @@ CONFIG += staticlib
 QT += network
 QT -= gui
 CONFIG += c++11
-VERSION = 3.1.0
+VERSION = 3.1.2
 
 defined(EXPORT_PATH_PREFIX, "var"){
     EXPORT_PATH = $$EXPORT_PATH_PREFIX

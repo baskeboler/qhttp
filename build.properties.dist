@@ -1,8 +1,0 @@
-config.job=2
-config.qtversion=5
-config.qompotercmd=./qompoter.sh
-config.qmakecmd=qmake-qt${config.qtversion}
-config.makecmd=make
-config.qompoterrepo=/Project/PlateformeVehiculeElectrique/qompoter
-config.os=linux
-config.arch=64
