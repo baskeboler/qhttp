@@ -14,6 +14,7 @@
 
 #include <QObject>
 #include <QHostAddress>
+#include <QWebSocket>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -91,6 +92,12 @@ signals:
      * @sa incomingConnection(); */
     void        newConnection(QHttpConnection* connection);
 
+    void        newWsConnection(QWebSocket*);
+
+
+protected slots:
+    void        forwardWsConnection(void);
+
 protected:
     /** returns the tcp server instance if the backend() == ETcpSocket. */
     QTcpServer* tcpServer() const;
@@ -118,6 +125,9 @@ protected:
      * @see example/benchmark/server.cpp to see how to override.
      */
     virtual void incomingConnection(qintptr handle);
+
+    /** Transfer the tcp socket to QWebsocketServer */
+    void onWebsocketConnection(QTcpSocket *socket);
 
 private:
     explicit    QHttpServer(QHttpServerPrivate&, QObject *parent);

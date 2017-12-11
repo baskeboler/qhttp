@@ -7,6 +7,7 @@ namespace server {
 
 QHttpServer::QHttpServer(QObject *parent)
     : QObject(parent), d_ptr(new QHttpServerPrivate) {
+    connect(&d_func()->iwsServer, &QWebSocketServer::newConnection, this, &QHttpServer::forwardWsConnection);
 }
 
 QHttpServer::QHttpServer(QHttpServerPrivate &dd, QObject *parent)
@@ -87,6 +88,14 @@ QHttpServer::setProxyHeader(const QByteArray &header)
     d_func()->iproxyHeader = header.toLower();
 }
 
+void QHttpServer::forwardWsConnection()
+{
+    if (d_func()->iwsServer.hasPendingConnections())
+    {
+        emit newWsConnection(d_func()->iwsServer.nextPendingConnection());
+    }
+}
+
 QTcpServer*
 QHttpServer::tcpServer() const {
     return d_func()->itcpServer.data();
@@ -104,6 +113,9 @@ QHttpServer::incomingConnection(qintptr handle) {
     conn->setTimeOut(d_func()->itimeOut);
     conn->setProxyHeader(d_func()->iproxyHeader);
 
+    connect(conn, &QHttpConnection::newWebsocketRequest,
+            this, &QHttpServer::onWebsocketConnection);
+
     emit newConnection(conn);
 
     Q_D(QHttpServer);
@@ -111,6 +123,13 @@ QHttpServer::incomingConnection(qintptr handle) {
         QObject::connect(conn, &QHttpConnection::newRequest, d->ihandler);
     else
         incomingConnection(conn);
+}
+
+void QHttpServer::onWebsocketConnection(QTcpSocket *socket)
+{
+    d_func()->iwsServer.handleConnection(socket);
+    //QWebSocket *s = new QWebSocket(socket, QWebSocketProtocol::Version13);
+    forwardWsConnection();
 }
 
 void

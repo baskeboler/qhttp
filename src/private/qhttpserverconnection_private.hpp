@@ -20,6 +20,7 @@
 
 #include <QBasicTimer>
 #include <QFile>
+#include <QCryptographicHash>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -152,6 +153,26 @@ private:
                 q_func(), &QHttpConnection::disconnected,
                 Qt::QueuedConnection
                 );
+    }
+
+    void wsHandler(QHttpRequest *request, QHttpResponse* response) {
+
+        isocket.disconnectAllQtConnections();
+
+        const QByteArray key(request->headers().value("Sec-WebSocket-Key"));
+        const QByteArray guid("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+        const QByteArray hash(QCryptographicHash::hash(key+guid, QCryptographicHash::Sha1).toBase64());
+
+        response->addHeader("Sec-WebSocket-Accept", hash);
+        response->addHeader("Upgrade", "websocket");
+        response->addHeader("Connection", "Upgrade");
+        response->setStatusCode(ESTATUS_SWITCH_PROTOCOLS);
+        response->end();
+
+        qDebug() << request->headers();
+        qDebug() << response->headers();
+
+        emit q_ptr->newWebsocketRequest(isocket.itcpSocket);
     }
 
 protected:

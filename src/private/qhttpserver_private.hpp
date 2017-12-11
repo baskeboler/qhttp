@@ -17,6 +17,7 @@
 
 #include <QTcpServer>
 #include <QLocalServer>
+#include <QWebSocketServer>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -57,11 +58,12 @@ public:
 
     TTcpServer      itcpServer;
     TLocalServer    ilocalServer;
+    QWebSocketServer iwsServer;
 
     QByteArray      iproxyHeader;
 
 public:
-    explicit    QHttpServerPrivate() {
+    explicit    QHttpServerPrivate() : iwsServer("QHTTP", QWebSocketServer::NonSecureMode) {
         QHTTP_LINE_DEEPLOG
     }
 
@@ -81,7 +83,6 @@ public:
             ilocalServer.reset( new BackendServer<QLocalServer>(parent) );
         }
     }
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////

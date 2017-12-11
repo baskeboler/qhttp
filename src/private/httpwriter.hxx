@@ -27,7 +27,7 @@ public:
         if ( ifinished )
             return false;
 
-        TBase::iheaders.insert(field.toLower(), value);
+        TBase::iheaders.insert(field, value);
         return true;
     }
 
@@ -77,10 +77,11 @@ public:
         if ( ifinished    ||    iheaderWritten )
             return;
 
-        if ( TBase::iheaders.keyHasValue("connection", "keep-alive") )
+        if ( TBase::iheaders.keyHasValue("Connection", "Keep-Alive") ||
+             TBase::iheaders.keyHasValue("Connection", "Upgrade"))
             ikeepAlive = true;
         else
-            TBase::iheaders.insert("connection", "close");
+            TBase::iheaders.insert("Connection", "close");
 
         TImpl* me = static_cast<TImpl*>(this);
         me->prepareHeadersToWrite();

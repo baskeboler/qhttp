@@ -12,7 +12,6 @@
 #include "qhttpfwd.hpp"
 
 #include <QObject>
-
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -31,6 +30,7 @@ public:
     /** set an optional timer event to close the connection. */
     void            setTimeOut(quint32 miliSeconds);
 
+    /** Set the proxy header */
     void            setProxyHeader(const QByteArray &header);
 
     /** forcefully kills (closes) a connection. */
@@ -67,6 +67,9 @@ signals:
 
     /** emitted when the tcp/local socket, disconnects. */
     void            disconnected();
+
+    /** emitted when we receive "Connection: upgrade" header */
+    void            newWebsocketRequest(QTcpSocket *socket);
 
 protected:
     explicit        QHttpConnection(QObject *parent);

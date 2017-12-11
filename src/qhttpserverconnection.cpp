@@ -106,7 +106,7 @@ QHttpConnectionPrivate::headerField(http_parser*, const char* at, size_t length)
     if ( !itempHeaderField.isEmpty() && !itempHeaderValue.isEmpty() ) {
         // header names are always lower-cased
         ilastRequest->d_func()->iheaders.insert(
-                    itempHeaderField.toLower(),
+                    itempHeaderField,
                     itempHeaderValue
                     );
         // clear header value. this sets up a nice
@@ -147,7 +147,7 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
 
     // Insert last remaining header
     ilastRequest->d_func()->iheaders.insert(
-                itempHeaderField.toLower(),
+                itempHeaderField,
                 itempHeaderValue
                 );
 
@@ -167,6 +167,17 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
     if ( ilastResponse )
         ilastResponse->deleteLater();
     ilastResponse  = new QHttpResponse(q_func());
+
+    if ( ilastRequest->d_func()->iheaders.value("Upgrade") == "websocket" &&
+         ilastRequest->d_func()->iheaders.value("Connection") == "Upgrade") {
+
+        // QWebsocketServer will handle the tcp socket from there
+        // Using QWebSocketServer::handleConnection
+        ilastResponse->d_func()->ikeepAlive = true; // Keep open
+        wsHandler(ilastRequest, ilastResponse);
+
+        return 0;
+    }
 
     if ( parser->http_major < 1 || parser->http_minor < 1  )
         ilastResponse->d_func()->ikeepAlive = false;
