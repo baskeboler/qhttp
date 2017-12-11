@@ -84,7 +84,7 @@ QHttpServer::backendType() const {
 void
 QHttpServer::setProxyHeader(const QByteArray &header)
 {
-    d_func()->iproxyHeader = header;
+    d_func()->iproxyHeader = header.toLower();
 }
 
 QTcpServer*
