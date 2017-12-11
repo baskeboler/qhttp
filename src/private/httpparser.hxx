@@ -90,6 +90,8 @@ protected:
     QSocket              isocket;
     // if connection should persist
     bool                 ikeepAlive = false;
+    //
+    QByteArray           iproxyHeader;
 
     // joyent http_parser
     http_parser          iparser;

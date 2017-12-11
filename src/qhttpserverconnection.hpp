@@ -31,6 +31,8 @@ public:
     /** set an optional timer event to close the connection. */
     void            setTimeOut(quint32 miliSeconds);
 
+    void            setProxyHeader(const QByteArray &header);
+
     /** forcefully kills (closes) a connection. */
     void            killConnection();
 

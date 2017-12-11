@@ -58,6 +58,8 @@ public:
     TTcpServer      itcpServer;
     TLocalServer    ilocalServer;
 
+    QByteArray      iproxyHeader;
+
 public:
     explicit    QHttpServerPrivate() {
         QHTTP_LINE_DEEPLOG

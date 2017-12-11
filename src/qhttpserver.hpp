@@ -77,6 +77,9 @@ public:
     /** returns the QHttpServer's backend type. */
     TBackend    backendType() const;
 
+    /** Sets the proxy header for real IP */
+    void        setProxyHeader(const QByteArray &header);
+
 signals:
     /** emitted when a client makes a new request to the server if you do not override
      *  incomingConnection(QHttpConnection *connection);

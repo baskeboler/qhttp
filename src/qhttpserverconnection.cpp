@@ -31,6 +31,11 @@ QHttpConnection::setTimeOut(quint32 miliSeconds) {
     }
 }
 
+void QHttpConnection::setProxyHeader(const QByteArray &header)
+{
+    d_func()->iproxyHeader = header;
+}
+
 void
 QHttpConnection::killConnection() {
     d_func()->isocket.close();
@@ -171,6 +176,9 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
             isocket.close();
         }
     });
+
+    if (!this->iproxyHeader.isEmpty())
+        ilastRequest->d_func()->iremoteAddress = ilastRequest->d_func()->iheaders.value(this->iproxyHeader);
 
     // we are good to go!
     if ( ihandler )

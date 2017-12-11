@@ -81,6 +81,12 @@ QHttpServer::backendType() const {
     return d_func()->ibackend;
 }
 
+void
+QHttpServer::setProxyHeader(const QByteArray &header)
+{
+    d_func()->iproxyHeader = header;
+}
+
 QTcpServer*
 QHttpServer::tcpServer() const {
     return d_func()->itcpServer.data();
@@ -96,6 +102,7 @@ QHttpServer::incomingConnection(qintptr handle) {
     QHttpConnection* conn = new QHttpConnection(this);
     conn->setSocketDescriptor(handle, backendType());
     conn->setTimeOut(d_func()->itimeOut);
+    conn->setProxyHeader(d_func()->iproxyHeader);
 
     emit newConnection(conn);
 
