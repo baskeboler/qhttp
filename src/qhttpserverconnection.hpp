@@ -69,7 +69,7 @@ signals:
     void            disconnected();
 
     /** emitted when we receive "Connection: upgrade" header */
-    void            newWebsocketRequest(QTcpSocket *socket);
+    void            newWebsocketUpgrade(QTcpSocket *socket);
 
 protected:
     explicit        QHttpConnection(QObject *parent);

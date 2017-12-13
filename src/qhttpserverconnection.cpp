@@ -79,7 +79,7 @@ QHttpConnection::timerEvent(QTimerEvent *) {
 int
 QHttpConnectionPrivate::messageBegin(http_parser*) {
     itempUrl.clear();
-    itempUrl.reserve(128);
+    //itempUrl.reserve(128);
 
     if ( ilastRequest )
         ilastRequest->deleteLater();
@@ -166,18 +166,37 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
 
     if ( ilastResponse )
         ilastResponse->deleteLater();
-    ilastResponse  = new QHttpResponse(q_func());
 
-    if ( ilastRequest->d_func()->iheaders.value("Upgrade") == "websocket" &&
+    if ( isocket.ibackendType == ETcpSocket &&
+         ilastRequest->d_func()->iheaders.value("Upgrade") == "websocket" &&
          ilastRequest->d_func()->iheaders.value("Connection") == "Upgrade") {
 
         // QWebsocketServer will handle the tcp socket from there
         // Using QWebSocketServer::handleConnection
-        ilastResponse->d_func()->ikeepAlive = true; // Keep open
-        wsHandler(ilastRequest, ilastResponse);
+
+        // We don't need the request anymore
+        QObject::disconnect(ilastRequest, 0, 0, 0);
+        ilastRequest->deleteLater();
+
+        // Disconnect socket to avoid triggering readyRead()
+        isocket.disconnectAllQtConnections();
+
+        // We need to rollback data to pass to QWebSocketServer.
+        isocket.rollbackTransaction();
+
+        emit q_ptr->newWebsocketUpgrade(isocket.itcpSocket);
+
+        // Remove parenting and references
+        isocket.itcpSocket->setParent(nullptr);
+        isocket.itcpSocket = nullptr;
+        this->release();
 
         return 0;
     }
+
+    // Validate data, we won't need to rollback.
+    isocket.commitTransaction();
+    ilastResponse  = new QHttpResponse(q_func());
 
     if ( parser->http_major < 1 || parser->http_minor < 1  )
         ilastResponse->d_func()->ikeepAlive = false;

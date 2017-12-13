@@ -113,8 +113,8 @@ QHttpServer::incomingConnection(qintptr handle) {
     conn->setTimeOut(d_func()->itimeOut);
     conn->setProxyHeader(d_func()->iproxyHeader);
 
-    connect(conn, &QHttpConnection::newWebsocketRequest,
-            this, &QHttpServer::onWebsocketConnection);
+    connect(conn, &QHttpConnection::newWebsocketUpgrade,
+            this, &QHttpServer::onWebsocketUpgrade);
 
     emit newConnection(conn);
 
@@ -125,10 +125,10 @@ QHttpServer::incomingConnection(qintptr handle) {
         incomingConnection(conn);
 }
 
-void QHttpServer::onWebsocketConnection(QTcpSocket *socket)
+void QHttpServer::onWebsocketUpgrade(QTcpSocket *socket)
 {
+    socket->setParent(&d_func()->iwsServer);
     d_func()->iwsServer.handleConnection(socket);
-    //QWebSocket *s = new QWebSocket(socket, QWebSocketProtocol::Version13);
     forwardWsConnection();
 }
 

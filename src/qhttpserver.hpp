@@ -127,7 +127,7 @@ protected:
     virtual void incomingConnection(qintptr handle);
 
     /** Transfer the tcp socket to QWebsocketServer */
-    void onWebsocketConnection(QTcpSocket *socket);
+    void onWebsocketUpgrade(QTcpSocket *socket);
 
 private:
     explicit    QHttpServer(QHttpServerPrivate&, QObject *parent);

@@ -21,6 +21,7 @@
 #include <QBasicTimer>
 #include <QFile>
 #include <QCryptographicHash>
+#include <QByteArray>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -80,10 +81,10 @@ public:
 public:
     void onReadyRead() {
         while ( isocket.bytesAvailable() > 0 ) {
-            char buffer[4097] = {0};
-            size_t readLength = (size_t) isocket.readRaw(buffer, 4096);
+            QByteArray buffer(4096, 0); // Includes n+1 bytes for '\0'
+            size_t readLength = (size_t) isocket.readRaw(buffer.data(), buffer.size());
 
-            parse(buffer, readLength);
+            parse(buffer.constData(), readLength);
         }
     }
 
@@ -153,26 +154,6 @@ private:
                 q_func(), &QHttpConnection::disconnected,
                 Qt::QueuedConnection
                 );
-    }
-
-    void wsHandler(QHttpRequest *request, QHttpResponse* response) {
-
-        isocket.disconnectAllQtConnections();
-
-        const QByteArray key(request->headers().value("Sec-WebSocket-Key"));
-        const QByteArray guid("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-        const QByteArray hash(QCryptographicHash::hash(key+guid, QCryptographicHash::Sha1).toBase64());
-
-        response->addHeader("Sec-WebSocket-Accept", hash);
-        response->addHeader("Upgrade", "websocket");
-        response->addHeader("Connection", "Upgrade");
-        response->setStatusCode(ESTATUS_SWITCH_PROTOCOLS);
-        response->end();
-
-        qDebug() << request->headers();
-        qDebug() << response->headers();
-
-        emit q_ptr->newWebsocketRequest(isocket.itcpSocket);
     }
 
 protected:
