@@ -78,7 +78,7 @@ public:
             itcpSocket->connectToHost(host, port);
     }
 
-    inline qint64 readRaw(char* buffer, int maxlen) {
+    inline qint64 readRaw(char* buffer, qint64 maxlen) {
         if ( itcpSocket ) {
             itcpSocket->startTransaction();
             return itcpSocket->read(buffer, maxlen);
@@ -87,6 +87,20 @@ public:
         else if ( ilocalSocket ) {
             ilocalSocket->startTransaction();
             return ilocalSocket->read(buffer, maxlen);
+        }
+
+        return 0;
+    }
+
+    inline QByteArray readRaw() {
+        if ( itcpSocket ) {
+            itcpSocket->startTransaction();
+            return itcpSocket->readAll();
+        }
+
+        else if ( ilocalSocket ) {
+            ilocalSocket->startTransaction();
+            return ilocalSocket->readAll();
         }
 
         return 0;
