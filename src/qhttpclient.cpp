@@ -213,7 +213,7 @@ QHttpClientPrivate::headerField(http_parser*, const char* at, size_t length) {
     if ( !itempHeaderField.isEmpty() && !itempHeaderValue.isEmpty() ) {
         // header names are always lower-cased
         ilastResponse->d_func()->iheaders.insert(
-                    itempHeaderField,
+                    itempHeaderField.toLower(),
                     itempHeaderValue
                     );
         // clear header value. this sets up a nice
@@ -241,7 +241,7 @@ QHttpClientPrivate::headersComplete(http_parser*) {
 
     // Insert last remaining header
     ilastResponse->d_func()->iheaders.insert(
-                itempHeaderField,
+                itempHeaderField.toLower(),
                 itempHeaderValue
                 );
 

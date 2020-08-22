@@ -32,7 +32,7 @@ public:
     void setTimeOut(quint32 miliSeconds);
 
     /** Set the proxy header */
-    void            setProxyHeader(const QByteArray &header);
+    void setProxyHeader(const QByteArray &header);
 
     /** forcefully kills (closes) a connection. */
     void killConnection();
@@ -70,7 +70,7 @@ signals:
     void disconnected();
 
     /** emitted when we receive "Connection: upgrade" header */
-    void            newWebsocketUpgrade(QTcpSocket *socket);
+    void newWebsocketUpgrade(QTcpSocket *socket);
 
 protected:
     explicit QHttpConnection(QHttpServer *parent);

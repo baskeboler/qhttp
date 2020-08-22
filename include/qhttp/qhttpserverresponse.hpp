@@ -33,6 +33,8 @@ public:
      */
     void setStatusCode(TStatusCode code);
 
+    TStatusCode statusCode() const;
+
 public: // QHttpAbstractOutput methods:
     /** @see QHttpAbstractOutput::setVersion(). */
     void setVersion(const QString& versionString) override;

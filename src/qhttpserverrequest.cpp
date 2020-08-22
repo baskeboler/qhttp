@@ -21,7 +21,7 @@ QHttpRequest::method() const {
     return d_func()->imethod;
 }
 
-QString
+const QString
 QHttpRequest::methodString() const {
     return http_method_str(static_cast<http_method>(d_func()->imethod));
 }

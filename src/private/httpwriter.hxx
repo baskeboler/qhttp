@@ -77,11 +77,12 @@ public:
         if ( ifinished    ||    iheaderWritten )
             return;
 
-        if ( TBase::iheaders.keyHasValue("Connection", "Keep-Alive") ||
-             TBase::iheaders.keyHasValue("Connection", "Upgrade"))
+        if ( TBase::iheaders.keyHasValueInsensitive("Connection", "Keep-Alive") ||
+             TBase::iheaders.keyHasValueInsensitive("Connection", "Upgrade") ) {
             ikeepAlive = true;
-        else
+        } else {
             TBase::iheaders.insert("Connection", "close");
+        }
 
         TImpl* me = static_cast<TImpl*>(this);
         me->prepareHeadersToWrite();

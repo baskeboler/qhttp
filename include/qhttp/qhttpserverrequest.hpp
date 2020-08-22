@@ -52,7 +52,7 @@ public:
     /** Returns the method string for the request.
      * @note This will plainly transform the enum into a string HTTP_GET ->
      * "HTTP_GET". */
-    QString methodString() const;
+    const QString methodString() const;
 
     /** The complete URL for the request.
      * This includes the path and query string. @sa path(). */

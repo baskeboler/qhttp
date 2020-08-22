@@ -16,28 +16,36 @@ namespace qhttp {
 ///////////////////////////////////////////////////////////////////////////////
 
 /** A map of request or response headers. */
-class Headers : public QHash<QByteArray, QByteArray>
-{
+class Headers : public QHash<QByteArray, QByteArray> {
 public:
-    /** checks for a header item, regardless of the case of the characters. */
-    bool has(const QByteArray& key) const {
-        return contains(key.toLower());
-    }
+  /** checks for a header item, regardless of the case of the characters. */
+  bool has(const QByteArray &key) const { return contains(key.toLower()); }
 
-    /** checks if a header has the specified value ignoring the case of the
-     * characters. */
-    bool keyHasValue(const QByteArray& key, const QByteArray& value) const {
-        if ( !contains(key) )
-            return false;
+  /** checks if a header has the specified value ignoring the case of the
+   * characters. */
+  bool keyHasValue(const QByteArray &key, const QByteArray &value) const {
+    auto lowerKey = key.toLower();
+    if (!contains(lowerKey))
+      return false;
 
-        const QByteArray& v = QHash<QByteArray, QByteArray>::value(key);
-        return qstrnicmp(value.constData(), v.constData(), v.size()) == 0;
-    }
+    const QByteArray &v = QHash<QByteArray, QByteArray>::value(lowerKey);
+    return v.indexOf(value) != -1;
+  }
 
-    template<class Func>
-    void forEach(Func&& f) const {
-        qhttp::for_each(constBegin(), constEnd(), f);
-    }
+  bool keyHasValueInsensitive(const QByteArray &key,
+                              const QByteArray &value) const {
+    auto lowerKey = key.toLower();
+    if (!contains(lowerKey))
+      return false;
+
+    const QByteArray &v = QHash<QByteArray, QByteArray>::value(lowerKey);
+    return (v.toLower().indexOf(value.toLower()) != -1);
+    // return qstrnicmp(value.constData(), v.constData(), v.size()) == 0;
+  }
+
+  template <class Func> void forEach(Func &&f) const {
+    qhttp::for_each(constBegin(), constEnd(), f);
+  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

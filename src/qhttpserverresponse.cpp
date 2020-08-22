@@ -21,6 +21,11 @@ QHttpResponse::setStatusCode(TStatusCode code) {
     d_func()->istatus   = code;
 }
 
+TStatusCode
+QHttpResponse::statusCode() const {
+    return d_func()->istatus;
+}
+
 void
 QHttpResponse::setVersion(const QString &versionString) {
     d_func()->iversion  = versionString;

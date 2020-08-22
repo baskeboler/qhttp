@@ -96,7 +96,6 @@ public:
             ilocalSocket->startTransaction();
             return ilocalSocket->read(buffer, maxlen);
         }
-
         return 0;
     }
 
@@ -110,8 +109,7 @@ public:
             ilocalSocket->startTransaction();
             return ilocalSocket->readAll();
         }
-
-        return 0;
+        return QByteArray();
     }
 
     inline void writeRaw(const QByteArray& data) {
@@ -165,10 +163,10 @@ public:
     }
 
 public:
-    TBackend          ibackendType = ETcpSocket;
-    QTcpSocket*       itcpSocket   = nullptr;
-    QLocalSocket*     ilocalSocket = nullptr;
-    QWebSocketServer* iwebSocket   = nullptr;
+    TBackend      ibackendType = ETcpSocket;
+    QTcpSocket*   itcpSocket   = nullptr;
+    QLocalSocket* ilocalSocket = nullptr;
+    QWebSocketServer* iwebSocket = nullptr;
     QByteArray lastWrittenData;
     QByteArray lastReadData;
 }; // class QSocket
