@@ -4,18 +4,18 @@
  * @author amir zamani
  * @version 2.0.0
  * @date 2014-07-11
-  */
+ */
 
 #ifndef QHTTPBASE_HPP
 #define QHTTPBASE_HPP
 
+#include "qhttpfwd.hpp"
 
-#include "qhttp/qhttpfwd.hpp"
-#include "qhttp/qhttpheaders.hpp"
-#include "qsocket.hpp"
+#include "qhttpabstractsocket.hpp"
+#include "qhttpheaders.hpp"
 
-#include <QHostAddress>
 #include <QBasicTimer>
+#include <QHostAddress>
 
 #include "http-parser/http_parser.h"
 
@@ -24,27 +24,24 @@ namespace qhttp {
 namespace details {
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HttpBase
-{
-    QString iversion;
-    Headers iheaders;
+struct HttpBase {
+  QString iversion;
+  Headers iheaders;
 }; // struct HttpBase
 
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HttpRequestBase : public HttpBase
-{
-    QUrl        iurl;
-    THttpMethod imethod;
+struct HttpRequestBase : public HttpBase {
+  QUrl iurl;
+  THttpMethod imethod;
 }; // HttpRequestBase
 
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HttpResponseBase : public HttpBase
-{
-    TStatusCode istatus = ESTATUS_BAD_REQUEST;
+struct HttpResponseBase : public HttpBase {
+  TStatusCode istatus = ESTATUS_BAD_REQUEST;
 
-    HttpResponseBase() { iversion = "1.1"; }
+  HttpResponseBase() { iversion = "1.1"; }
 }; // HttpResponseBase
 
 ///////////////////////////////////////////////////////////////////////////////

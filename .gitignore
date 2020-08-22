@@ -1,7 +1,6 @@
 # 3rdparty, tmp and build direcotry
-3rdparty/
-tmp/
-xbin/
+3rdParty/
+out/
 build/
 docs/
 res/keys
@@ -10,6 +9,7 @@ vendor
 build.properties
 commit-*
 TODO.md
+.*~
 
 # vim/neovim / YouCompleteMe
 .vimrc

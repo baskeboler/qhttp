@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef __QHTTP_HTTPWRITER_HXX__
-#define __QHTTP_HTTPWRITER_HXX__
+#ifndef QHTTP_HTTPWRITER_HXX
+#define QHTTP_HTTPWRITER_HXX
 
 #include "qhttpbase.hpp"
 #include <QHashIterator>
@@ -40,7 +40,7 @@ public:
                             .append(value)
                             .append("\r\n");
 
-        isocket.writeRaw(buffer);
+        isocket->writeRaw(buffer);
         return true;
     }
 
@@ -49,7 +49,7 @@ public:
             return false;
 
         ensureWritingHeaders();
-        isocket.writeRaw(data);
+        isocket->writeRaw(data);
         return true;
     }
 
@@ -57,7 +57,7 @@ public:
         if ( !writeData(data) )
             return false;
 
-        isocket.flush();
+        isocket->flush();
         ifinished = true;
         return true;
     }
@@ -67,7 +67,7 @@ public:
             return;
 
         TImpl* me = static_cast<TImpl*>(this);
-        isocket.writeRaw(me->makeTitle());
+        isocket->writeRaw(me->makeTitle());
         writeHeaders();
 
         iheaderWritten = true;
@@ -96,13 +96,13 @@ public:
             this->writeHeader(field, value);
         }
 
-        isocket.writeRaw("\r\n");
+        isocket->writeRaw("\r\n");
         if ( doFlush )
-            isocket.flush();
+            isocket->flush();
     }
 
 public:
-    QSocket isocket;
+    QScopedPointer<QHttpAbstractSocket> isocket;
 
     bool    ifinished      = false;
     bool    iheaderWritten = false;
@@ -114,4 +114,4 @@ public:
 } // namespace details
 } // namespace qhttp
 ///////////////////////////////////////////////////////////////////////////////
-#endif // __QHTTP_HTTPWRITER_HXX__
+#endif // QHTTP_HTTPWRITER_HXX

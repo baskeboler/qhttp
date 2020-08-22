@@ -12,9 +12,13 @@ QHttpServer::QHttpServer(QObject *parent)
 }
 
 QHttpServer::QHttpServer(QHttpServerPrivate &dd, QObject *parent)
-    : QObject(parent), d_ptr(&dd) {}
+    : QObject(parent), d_ptr(&dd) {
+  connect(&d_func()->iwsServer, &QWebSocketServer::newConnection, this,
+          &QHttpServer::forwardWsConnection);
+}
 
 QHttpServer::~QHttpServer() { stopListening(); }
+
 #if defined(QHTTP_HAS_SSL)
 void QHttpServer::setSslConfig(ssl::Config scnf) {
   d_func()->isslConfig = std::move(scnf);
@@ -147,8 +151,8 @@ QLocalServer *QHttpServer::localServer() const {
 void QHttpServer::incomingConnection(qintptr handle) {
   Q_D(QHttpServer);
 
-  QHttpConnection *conn = new QHttpConnection(this);
-  conn->setSocketDescriptor(handle, backendType());
+  QHttpConnection *conn = new QHttpConnection(this, backendType());
+  conn->setSocketDescriptor(handle);
   conn->setTimeOut(d_func()->itimeOut);
   conn->setProxyHeader(d_func()->iproxyHeader);
 

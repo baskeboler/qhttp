@@ -4,41 +4,40 @@
  * @author amir zamani
  * @version 2.0.0
  * @date 2014-07-11
-  */
+ */
 
 #ifndef QHTTPSERVER_REQUEST_PRIVATE_HPP
 #define QHTTPSERVER_REQUEST_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "httpreader.hxx"
-#include "qhttp/qhttpserverrequest.hpp"
-#include "qhttp/qhttpserverconnection.hpp"
+#include "qhttpserverconnection.hpp"
+#include "qhttpserverrequest.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
 ///////////////////////////////////////////////////////////////////////////////
-class QHttpRequestPrivate :
-    public details::HttpReader<details::HttpRequestBase>
-{
+class QHttpRequestPrivate
+    : public details::HttpReader<details::HttpRequestBase> {
 protected:
-    Q_DECLARE_PUBLIC(QHttpRequest)
-    QHttpRequest* const     q_ptr;
+  Q_DECLARE_PUBLIC(QHttpRequest)
+  QHttpRequest *const q_ptr;
 
 public:
-    explicit    QHttpRequestPrivate(QHttpConnection* conn, QHttpRequest* q)
-        : q_ptr(q), iconnection(conn) {
-    }
+  explicit QHttpRequestPrivate(QHttpConnection *conn, QHttpRequest *q)
+      : q_ptr(q), iconnection(conn) {}
 
-    virtual    ~QHttpRequestPrivate() = default;
+  virtual ~QHttpRequestPrivate() = default;
 
-    void        initialize() { }
+  void initialize() {}
 
 public:
-    QString     iremoteAddress;
-    quint16     iremotePort = 0;
+  QString iremoteAddress;
+  quint16 iremotePort = 0;
+  QList<QPair<QString, QString>> iuserDefinedValues;
 
-    QHttpConnection* const  iconnection = nullptr;
+  QHttpConnection *const iconnection = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

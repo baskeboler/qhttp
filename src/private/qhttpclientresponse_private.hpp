@@ -4,40 +4,38 @@
  * @author amir zamani
  * @version 2.0.0
  * @date 2014-07-11
-  */
+ */
 
 #ifndef QHTTPCLIENT_RESPONSE_PRIVATE_HPP
 #define QHTTPCLIENT_RESPONSE_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "httpreader.hxx"
-#include "qhttp/qhttpclient.hpp"
-#include "qhttp/qhttpclientresponse.hpp"
+#include "qhttpclient.hpp"
+#include "qhttpclientresponse.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace client {
 ///////////////////////////////////////////////////////////////////////////////
-class QHttpResponsePrivate :
-    public details::HttpReader<details::HttpResponseBase>
-{
-    Q_DECLARE_PUBLIC(QHttpResponse)
-    QHttpResponse* const    q_ptr;
+class QHttpResponsePrivate
+    : public details::HttpReader<details::HttpResponseBase> {
+  Q_DECLARE_PUBLIC(QHttpResponse)
+  QHttpResponse *const q_ptr;
 
 public:
-    explicit    QHttpResponsePrivate(QHttpClient* cli, QHttpResponse* q)
-        : q_ptr(q), iclient(cli) { }
+  explicit QHttpResponsePrivate(QHttpClient *cli, QHttpResponse *q)
+      : q_ptr(q), iclient(cli) {}
 
-    virtual    ~QHttpResponsePrivate() = default;
+  virtual ~QHttpResponsePrivate() = default;
 
-    void       initialize() {
-    }
+  void initialize() {}
 
 public:
-    QString                 icustomStatusMessage;
+  QString icustomStatusMessage;
 
 protected:
-    QHttpClient* const      iclient;
+  QHttpClient *const iclient;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef __QHTTP_HTTPPARSER_HXX__
-#define __QHTTP_HTTPPARSER_HXX__
+#ifndef QHTTP_HTTPPARSER_HXX
+#define QHTTP_HTTPPARSER_HXX
 
 #include "qhttpbase.hpp"
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ protected:
     quint32              itimeOut   = 0;
     QBasicTimer          itimer;
     // uniform socket object
-    QSocket              isocket;
+    QScopedPointer<QHttpAbstractSocket>              isocket;
     // if connection should persist
     bool                 ikeepAlive = false;
     //
@@ -118,4 +118,4 @@ struct HttpResponseParser : public HttpParser<TImpl> {
 } // namespace details
 } // namespace qhttp
 ///////////////////////////////////////////////////////////////////////////////
-#endif // __QHTTP_HTTPPARSER_HXX__
+#endif // QHTTP_HTTPPARSER_HXX

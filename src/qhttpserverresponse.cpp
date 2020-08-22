@@ -18,45 +18,43 @@ QHttpResponse::~QHttpResponse() = default;
 
 void
 QHttpResponse::setStatusCode(TStatusCode code) {
-    d_func()->istatus   = code;
+    d_ptr->istatus   = code;
 }
 
 TStatusCode
 QHttpResponse::statusCode() const {
-    return d_func()->istatus;
+    return d_ptr->istatus;
 }
 
 void
 QHttpResponse::setVersion(const QString &versionString) {
-    d_func()->iversion  = versionString;
+    this->d_ptr->iversion  = versionString;
 }
 
 void
 QHttpResponse::addHeader(const QByteArray &field, const QByteArray &value) {
-    d_func()->addHeader(field, value);
+    this->d_ptr->addHeader(field, value);
 }
 
 Headers&
 QHttpResponse::headers() {
-    return d_func()->iheaders;
+    return this->d_ptr->iheaders;
 }
 
 void
 QHttpResponse::write(const QByteArray &data) {
-    d_func()->writeData(data);
+    this->d_ptr->writeData(data);
 }
 
 void
 QHttpResponse::end(const QByteArray &data) {
-    Q_D(QHttpResponse);
-
-    if ( d->endPacket(data) )
-        emit done(!d->ikeepAlive);
+    if ( this->d_ptr->endPacket(data) )
+        emit done(!this->d_ptr->ikeepAlive);
 }
 
 QHttpConnection*
 QHttpResponse::connection() const {
-    return d_func()->iconnection;
+    return this->d_ptr->iconnection;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

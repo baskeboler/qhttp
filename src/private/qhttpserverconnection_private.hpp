@@ -11,11 +11,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "httpparser.hxx"
-#include "qhttp/qhttpserver.hpp"
-#include "qhttp/qhttpserverconnection.hpp"
-#include "qhttp/qhttpserverrequest.hpp"
-#include "qhttp/qhttpserverresponse.hpp"
-#include "qhttp/qhttpsslsocket.hpp"
+#include "qhttpserver.hpp"
+#include "qhttpserverconnection.hpp"
+#include "qhttpserverrequest.hpp"
+#include "qhttpserverresponse.hpp"
+#include "qhttpsslsocket.hpp"
 
 #include "private/qhttpserverrequest_private.hpp"
 #include "private/qhttpserverresponse_private.hpp"
@@ -33,14 +33,22 @@ class QHttpConnectionPrivate
   Q_DECLARE_PUBLIC(QHttpConnection)
 
 public:
-  explicit QHttpConnectionPrivate(QHttpConnection *q, QHttpServer *server)
+  explicit QHttpConnectionPrivate(QHttpConnection *q, QHttpServer *server,
+                                  TBackend backendType)
       : q_ptr(q), iserver(server) {
+    if (backendType == ETcpSocket) {
+      isocket.reset(new details::QHttpTcpSocket);
+    } else {
+      isocket.reset(new details::QHttpLocalSocket);
+    }
+    isocket->ibackendType = backendType;
     QObject::connect(q_func(), &QHttpConnection::disconnected,
                      [this]() { release(); });
   }
 
   virtual ~QHttpConnectionPrivate() = default;
 
+#if 0
   void createSocket(qintptr sokDesc, TBackend bend) {
     isocket.ibackendType = bend;
 
@@ -50,6 +58,23 @@ public:
     } else if (bend == ELocalSocket) {
       initLocalSocket(sokDesc);
     }
+   }
+#endif
+
+  void createSocket(qintptr sokDesc) {
+    if (isocket->ibackendType == ETcpSocket) {
+      QTcpSocket *sok = new QTcpSocket(q_func());
+      sok->setSocketDescriptor(sokDesc);
+      isocket->itcpSocket = sok;
+    } else if (isocket->ibackendType == ELocalSocket) {
+      QLocalSocket *sok = new QLocalSocket(q_func());
+      sok->setSocketDescriptor(sokDesc);
+      isocket->ilocalSocket = sok;
+    }
+    isocket->init(
+        q_func(), sokDesc, [this]() { onReadyRead(); },
+        [this]() { onWriteReady(); },
+        [this]() { emit q_func()->disconnected(); });
   }
 
   void release() {
@@ -57,8 +82,8 @@ public:
     // messageComplete, dispatch the ilastRequest
     finalizeConnection();
 
-    isocket.disconnectAllQtConnections();
-    isocket.release();
+    isocket->disconnectAllQtConnections();
+    isocket->release();
 
     if (ilastRequest) {
       ilastRequest->deleteLater();
@@ -75,10 +100,21 @@ public:
 
 public:
   void onReadyRead() {
-    while (isocket.bytesAvailable() > 0) {
-      QByteArray buffer(isocket.readRaw());
+    while (isocket->bytesAvailable() > 0) {
+      QByteArray buffer(isocket->readRaw());
+
       parse(buffer.constData(), buffer.size());
+      if (iparser.http_errno != 0) {
+        release(); // release the socket if parsing failed
+        return;
+      }
     }
+  }
+
+  void onWriteReady() {
+    auto bytesWritten = isocket->bytesToWrite();
+    if (bytesWritten == 0 && ilastResponse)
+      emit ilastResponse->allBytesWritten();
   }
 
   void finalizeConnection() {
@@ -102,6 +138,7 @@ public:
   int messageComplete(http_parser *parser);
 
 private:
+#if 0
   void initTcpSocket(qintptr sokDesc) {
 #if defined(QHTTP_HAS_SSL)
     const auto &sslConfig = iserver->sslConfig();
@@ -148,6 +185,18 @@ private:
                      &QHttpConnection::disconnected, Qt::QueuedConnection);
   }
 
+
+    
+
+    void finalizeConnection() {
+        if ( ilastRequest == nullptr )
+            return;
+
+        ilastRequest->pPrivate->finalizeSending([this]{
+            emit ilastRequest->end();
+        });
+    }
+#endif
 protected:
   QHttpConnection *const q_ptr;
   QHttpServer *const iserver;
