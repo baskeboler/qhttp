@@ -7,25 +7,21 @@ namespace server {
 QHttpRequest::QHttpRequest(QHttpConnection *conn)
     : QHttpAbstractInput(conn), d_ptr(new QHttpRequestPrivate(conn, this)) {
     d_ptr->initialize();
-    QHTTP_LINE_LOG
 }
 
 QHttpRequest::QHttpRequest(QHttpRequestPrivate &dd, QHttpConnection *conn)
     : QHttpAbstractInput(conn), d_ptr(&dd) {
     d_ptr->initialize();
-    QHTTP_LINE_LOG
 }
 
-QHttpRequest::~QHttpRequest() {
-    QHTTP_LINE_LOG
-}
+QHttpRequest::~QHttpRequest() = default;
 
 THttpMethod
 QHttpRequest::method() const {
     return d_func()->imethod;
 }
 
-const QString
+QString
 QHttpRequest::methodString() const {
     return http_method_str(static_cast<http_method>(d_func()->imethod));
 }
@@ -40,7 +36,7 @@ QHttpRequest::httpVersion() const {
     return d_func()->iversion;
 }
 
-const THeaderHash&
+const Headers&
 QHttpRequest::headers() const {
     return d_func()->iheaders;
 }
@@ -66,8 +62,8 @@ QHttpRequest::collectData(int atMost) {
 }
 
 const QByteArray&
-QHttpRequest::collectedData() const {
-    return d_func()->icollectedData;
+QHttpRequest::body() const {
+    return d_func()->ibody;
 }
 
 QHttpConnection*

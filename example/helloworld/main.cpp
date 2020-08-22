@@ -1,10 +1,10 @@
-#include "qhttpserver.hpp"
-#include "qhttpserverresponse.hpp"
-#include "qhttpserverrequest.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverresponse.hpp"
+#include "qhttp/qhttpserverrequest.hpp"
 
-#include "qhttpclient.hpp"
-#include "qhttpclientrequest.hpp"
-#include "qhttpclientresponse.hpp"
+#include "qhttp/qhttpclient.hpp"
+#include "qhttp/qhttpclientrequest.hpp"
+#include "qhttp/qhttpclientresponse.hpp"
 
 #include "../include/unixcatcher.hpp"
 
@@ -32,7 +32,7 @@ void runServer(const QString& portOrPath) {
             res->setStatusCode(qhttp::ESTATUS_OK); // status 200
             res->addHeader("connection", "close"); // optional(default) header
 
-            int size = req->collectedData().size();
+            int size = req->body().size();
             auto message = [size]() -> QByteArray {
                 if ( size == 0 )
                     return "Hello World!\n";
@@ -85,15 +85,15 @@ void runClient(QString url) {
 
     QHttpClient  client(qApp);
 
-    bool success = client.request(qhttp::EHTTP_GET, url, [](QHttpResponse* res) {
+    bool success = client.get(url, [](QHttpResponse* res) {
         // response handler, called when the HTTP headers of the response are ready
         res->collectData();
         // called when all data in HTTP response have been read.
         res->onEnd([res]() {
             // print the XML body of the response
             qDebug("\nreceived %d bytes of http body:\n%s\n",
-                    res->collectedData().size(),
-                    res->collectedData().constData()
+                    res->body().size(),
+                    res->body().constData()
                   );
 
             qApp->quit();
@@ -122,7 +122,7 @@ void runWeatherClient(const QString& cityName) {
 
     QUrl weatherUrl(QString("http://wttr.in/%1").arg(cityName));
 
-    client.request(qhttp::EHTTP_GET, weatherUrl, [&httpBody](QHttpResponse* res) {
+    client.get(weatherUrl, [&httpBody](QHttpResponse* res) {
         // response handler, called when the HTTP headers of the response are ready
 
         // gather HTTP response data manually
@@ -169,9 +169,7 @@ void runWeatherClient(const QString& cityName) {
 
 int main(int argc, char ** argv) {
     QCoreApplication app(argc, argv);
-#if defined(Q_OS_UNIX)
-    catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
-#endif
+    catchDefaultOsSignals();
 
     app.setApplicationName("helloworld");
     app.setApplicationVersion("1.0.0");

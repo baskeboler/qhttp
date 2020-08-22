@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     QHttpClient client(&app);
     QUrl        weatherUrl("http://wttr.in/tehran");
 
-    client.request(qhttp::EHTTP_GET, weatherUrl, [](QHttpResponse* res) {
+    client.get(weatherUrl, [](QHttpResponse* res) {
         // response handler, called when the incoming HTTP headers are ready
 
         // gather HTTP response data (HTTP body)
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 
         // when all data in HTTP response have been read:
         res->onEnd([&]() {
-            writeTo("weather.html", res->collectedData());
+            writeTo("weather.html", res->body());
 
             // done! now quit the application
             qApp->quit();
@@ -159,13 +159,24 @@ $> git clone https://github.com/azadkuh/qhttp.git
 $> cd qhttp
 
 # prepare dependencies:
-$qhttp/> qompoter install
-
-*Note: to install Qompoter on your machine, use `npm install -g qompoter` or check [Qompoter documentation](https://github.com/Fylhan/qompoter/blob/master/README.md#installation).*
+$qhttp/> ./update-dependencies.sh
 
 # now build the library and the examples
 $qhttp/> qmake -r qhttp.pro
 $qhttp/> make -j 8
+```
+
+To set install prefix pass PREFIX variable to qmake:
+
+```
+qmake PREFIX=/usr
+```
+
+By default, only the build of QHttp server is enabled, to enable the build of
+QHttp client, pass ENABLE_QHTTP_CLIENT=1 to qmake:
+
+```
+qmake ENABLE_QHTTP_CLIENT=1
 ```
 
 ## Multi-threading
@@ -192,7 +203,7 @@ in some rare scenarios you may want to use multiple handler threads (although
 - **`src/`**: holds the source code of `QHttp`. server classes are prefixed by
 `qhttpserver*` and client classes by `qhttpclient*`.
   - **`private/`**: Private classes of the library.
-- **`vendor/`**: will contain `http-parser` source tree as the only
+- **`3rdparty/`**: will contain `http-parser` source tree as the only
 dependency.  this directory is created by setup. see also: [setup](#setup).
 - **`example/`**: contains some sample applications representing the `QHttp`
 usage:

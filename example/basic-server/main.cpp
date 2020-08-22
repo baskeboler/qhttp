@@ -1,7 +1,7 @@
-#include "qhttpserver.hpp"
-#include "qhttpserverconnection.hpp"
-#include "qhttpserverrequest.hpp"
-#include "qhttpserverresponse.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverconnection.hpp"
+#include "qhttp/qhttpserverrequest.hpp"
+#include "qhttp/qhttpserverresponse.hpp"
 
 #include <QtCore/QCoreApplication>
 #include <QDateTime>
@@ -39,10 +39,10 @@ public:
                    qPrintable(req->url().toString())
                    );
 
-            if ( req->collectedData().size() > 0 )
+            if ( req->body().size() > 0 )
                 qDebug("  body (#%llu): %s",
                         iconnectionId,
-                        req->collectedData().constData()
+                        req->body().constData()
                         );
 
             QString message =
@@ -79,9 +79,7 @@ protected:
 
 int main(int argc, char ** argv) {
     QCoreApplication app(argc, argv);
-#if defined(Q_OS_UNIX)
-    catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
-#endif
+    catchDefaultOsSignals();
 
     // dumb (trivial) connection counter
     quint64 iconnectionCounter = 0;

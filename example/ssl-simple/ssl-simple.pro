@@ -3,13 +3,12 @@ QT          -= gui
 CONFIG      += console
 osx:CONFIG  -= app_bundle
 
-TARGET       = postcollector
+TARGET       = ssl-simple
 TEMPLATE     = app
-
-PRJDIR       = ../..
 
 HEADERS   +=
 
 SOURCES   += main.cpp
+RESOURCES += resources.qrc
 
 include($$PWD/../example.pri)

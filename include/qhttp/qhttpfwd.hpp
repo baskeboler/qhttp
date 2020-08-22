@@ -9,7 +9,6 @@
 #ifndef QHTTPFWD_HPP
 #define QHTTPFWD_HPP
 ///////////////////////////////////////////////////////////////////////////////
-#include <QHash>
 #include <QString>
 #include <QtGlobal>
 
@@ -21,6 +20,7 @@ class QTcpSocket;
 class QLocalServer;
 class QLocalSocket;
 class QHostAddress;
+class QWebSocket;
 
 // http_parser
 struct http_parser_settings;
@@ -29,6 +29,7 @@ struct http_parser;
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 ///////////////////////////////////////////////////////////////////////////////
+class Headers;
 
 /// QHash/QMap iterators are incompatibility with range for
 template<class Iterator, class Func>
@@ -38,31 +39,6 @@ void for_each(Iterator first, Iterator last, Func&& f) {
         ++first;
     }
 }
-
-/** A map of request or response headers. */
-class THeaderHash : public QHash<QByteArray, QByteArray>
-{
-public:
-    /** checks for a header item, regardless of the case of the characters. */
-    bool has(const QByteArray& key) const {
-        return contains(key.toLower());
-    }
-
-    /** checks if a header has the specified value ignoring the case of the characters. */
-    bool keyHasValue(const QByteArray& key, const QByteArray& value) const {
-        if ( !contains(key) )
-            return false;
-
-        const QByteArray& v = QHash<QByteArray, QByteArray>::value(key);
-        return qstrnicmp(value.constData(), v.constData(), v.size()) == 0;
-    }
-
-    template<class Func>
-    void forEach(Func&& f) const {
-        for_each(constBegin(), constEnd(), f);
-    }
-};
-
 
 /** Request method enumeration.
  * @note Taken from http_parser.h */
@@ -155,11 +131,12 @@ enum TStatusCode {
      ESTATUS_HTTP_VERSION_NOT_SUPPORTED         = 505
 };
 
-/** The backend of QHttp library. */
+/// The backend of QHttp library
 enum TBackend {
-    ETcpSocket     = 0, ///< client / server work on top of TCP/IP stack. (default)
-    ESslSocket     = 1, ///< client / server work on SSL/TLS tcp stack. (not implemented yet)
-    ELocalSocket   = 2  ///< client / server work on local socket (unix socket).
+    /// client / server work on top of TCP/IP stack. (default, including ssl)
+    ETcpSocket     = 0,
+    /// client / server work on local socket (unix socket).
+    ELocalSocket   = 2
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,7 +153,7 @@ class QHttpConnectionPrivate;
 class QHttpRequestPrivate;
 class QHttpResponsePrivate;
 
-using TServerHandler = std::function<void (QHttpRequest*, QHttpResponse*)>;
+using ServerHandler = std::function<void (QHttpRequest*, QHttpResponse*)>;
 
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace server
@@ -202,23 +179,26 @@ class QHttpResponsePrivate;
 #   else
 #       define QHTTP_API
 #   endif
-#else
+#elif !defined(Q_OS_WIN)  ||  !defined(_MSC_VER)
+    // unices (linux, macos, ...), mingw
 #   define QHTTP_API
+
+#else // MSVC++ problems with exporting
+#   if _MSC_VER < 1900
+#       error this old msvc++ does not support c++14.
+#   endif
+
+#   if defined(_DLL) // compiled as dll
+#       if defined(QHTTP_EXPORT)
+#           define QHTTP_API __declspec(dllexport)
+#       else
+#           define QHTTP_API __declspec(dllimport)
+#       endif
+#   else // static library
+#       define QHTTP_API
+#   endif
 #endif
 
-
-#if QHTTP_MEMORY_LOG > 0
-#   define QHTTP_LINE_LOG fprintf(stderr, "%s(): obj = %p    @ %s[%d]\n",\
-    __FUNCTION__, this, __FILE__, __LINE__);
-#else
-#   define QHTTP_LINE_LOG
-#endif
-
-#if QHTTP_MEMORY_LOG > 1
-#   define QHTTP_LINE_DEEPLOG QHTTP_LINE_LOG
-#else
-#   define QHTTP_LINE_DEEPLOG
-#endif
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace qhttp
 ///////////////////////////////////////////////////////////////////////////////

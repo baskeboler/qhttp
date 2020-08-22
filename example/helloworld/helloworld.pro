@@ -6,13 +6,8 @@ osx:CONFIG  -= app_bundle
 TARGET       = helloworld
 TEMPLATE     = app
 
-PRJDIR       = ../..
-include($$PRJDIR/commondir.pri)
-
 HEADERS   +=
 
 SOURCES   += main.cpp
 
-include($$PWD/../../vendor/qompote.pri)
-LIBS      += -L$${OUT_PWD}/../../src -l$$getLibName(qhttp, "Qt")
-
+include($$PWD/../example.pri)

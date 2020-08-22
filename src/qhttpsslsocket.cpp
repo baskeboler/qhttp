@@ -1,5 +1,5 @@
-#include "qhttpsslsocket.hpp"
-#include "qhttpabstracts.hpp"
+#include "qhttp/qhttpsslsocket.hpp"
+#include "qhttp/qhttpabstracts.hpp"
 
 #include <QSslConfiguration>
 #include <QHostAddress>
@@ -16,7 +16,10 @@ appendTrusted(QSslConfiguration& sslconfig, const CertificateList& cas) {
 
     auto trusted = cas;
     trusted << sslconfig.caCertificates()
-            << QSslConfiguration::systemCaCertificates();
+#if QT_VERSION >= 0x050500
+            << QSslConfiguration::systemCaCertificates()
+#endif
+    ;
     sslconfig.setCaCertificates(trusted);
 
     return true;
@@ -51,9 +54,16 @@ ssl::Socket::Socket(QObject* parent) : QSslSocket(parent) {
     // log ssl errors
     void (QSslSocket::*serrFunc)(const QList<QSslError>&) =
         &QSslSocket::sslErrors;
-    QObject::connect(this, serrFunc, this, &Socket::onSslErrors);
 
-    QObject::connect(this, &QSslSocket::peerVerifyError, this, &Socket::onPeerVerifyError);
+    //QObject::connect(this, serrFunc, this, &Socket::onSslErrors);
+    QObject::connect(this, serrFunc, [this](const auto& errors) {
+        this->onSslErrors(errors);
+    });
+
+    QObject::connect(
+        this, &QSslSocket::peerVerifyError, [this](const QSslError& err) {
+        this->onPeerVerifyError(err);
+    });
 }
 
 void

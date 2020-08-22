@@ -1,10 +1,10 @@
-#include "qhttpclient.hpp"
-#include "qhttpclientrequest.hpp"
-#include "qhttpclientresponse.hpp"
-#include "qhttpserver.hpp"
-#include "qhttpserverconnection.hpp"
-#include "qhttpserverrequest.hpp"
-#include "qhttpserverresponse.hpp"
+#include "qhttp/qhttpclient.hpp"
+#include "qhttp/qhttpclientrequest.hpp"
+#include "qhttp/qhttpclientresponse.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverconnection.hpp"
+#include "qhttp/qhttpserverrequest.hpp"
+#include "qhttp/qhttpserverresponse.hpp"
 
 #include "../include/ticktock.hxx"
 #include "../include/unixcatcher.hpp"
@@ -26,14 +26,14 @@ using namespace qhttp::client;
 ///////////////////////////////////////////////////////////////////////////////
 struct Client
 {
-    int start(quint16 port, int count) {
+    int start(const QString& ip, quint16 port, int count) {
         QObject::connect(&iclient, &QHttpClient::disconnected, [this]() {
             finalize();
         });
 
         QUrl url;
         url.setScheme("http");
-        url.setHost("localhost");
+        url.setHost(ip);
         url.setPort(port);
 
         iurl   = url;
@@ -46,28 +46,26 @@ struct Client
     }
 
     void send() {
-        iclient.request(
-                qhttp::EHTTP_POST,
-                iurl,
-                [this](QHttpRequest* req){
-                    QJsonObject root{
-                    {"name", "add"},
-                    {"stan", ++istan},
-                    {"args", QJsonArray{10, 14, -12}} // server computes sum of these values
-                    };
+        iclient.post(iurl,
+            [this](QHttpRequest* req){
+            QJsonObject root{
+                {"name", "add"},
+                {"stan", ++istan},
+                {"args", QJsonArray{10, 14, -12}} // server computes sum of these values
+                };
 
-                    auto body = QJsonDocument(root).toJson();
-                    req->addHeader("connection", "keep-alive");
-                    req->addHeaderValue("content-length", body.length());
-                    req->end(body);
-                },
-                [this](QHttpResponse* res) {
-                    res->collectData(512);
+                auto body = QJsonDocument(root).toJson();
+                req->addHeader("connection", "keep-alive");
+                req->addHeaderValue("content-length", body.length());
+                req->end(body);
+            },
+            [this](QHttpResponse* res) {
+                res->collectData(512);
 
-                    res->onEnd([this, res](){
-                            onIncomingData(res->collectedData());
-                    });
+                res->onEnd([this, res](){
+                    onIncomingData(res->body());
                 });
+            });
     }
 
     void onIncomingData(const QByteArray& data) {
@@ -89,8 +87,8 @@ struct Client
     }
 
     void finalize() {
-        qDebug("totally %d request/response pairs have been transmitted in %lld [mSec].\n",
-               istan, itick.tock()
+        qDebug("totally %d request/response pairs have been transmitted in %.0lf [µSec].\n",
+               istan, itick.tockf()
                );
 
         QCoreApplication::quit();
@@ -136,7 +134,7 @@ struct Server : public QHttpServer
     }
 
     void process(QHttpRequest* req, QHttpResponse* res) {
-        auto root = QJsonDocument::fromJson(req->collectedData()).object();
+        auto root = QJsonDocument::fromJson(req->body()).object();
 
         if ( root.isEmpty()  ||  root.value("name").toString() != QLatin1Literal("add") ) {
             const static char KMessage[] = "Invalid json format!";
@@ -170,9 +168,7 @@ struct Server : public QHttpServer
 int
 main(int argc, char ** argv) {
     QCoreApplication app(argc, argv);
-#if defined(Q_OS_UNIX)
-    catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
-#endif
+    catchDefaultOsSignals();
 
     app.setApplicationName("keep-alive");
     app.setApplicationVersion("1.0.0");
@@ -192,6 +188,11 @@ main(int argc, char ** argv) {
             "number/path", "10022"
             });
     parser.addOption({
+            {"i", "ip"},
+            "ip address of test server",
+            "ip", "127.0.0.1"
+            });
+    parser.addOption({
             {"c", "count"},
             "count of request/response pairs (only in client mode). default: 100",
             "number", "100"
@@ -209,6 +210,7 @@ main(int argc, char ** argv) {
         } else if ( mode == QLatin1Literal("client") ) {
             client::Client client;
             return client.start(
+                    parser.value("ip"),
                     parser.value("port").toUShort(),
                     parser.value("count").toInt()
                     );

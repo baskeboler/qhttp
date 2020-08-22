@@ -9,9 +9,12 @@
 #ifndef QHTTPBASE_HPP
 #define QHTTPBASE_HPP
 
-#include "qhttpfwd.hpp"
-#include "qhttpheaders.hpp"
+
+#include "qhttp/qhttpfwd.hpp"
+
+#include "qhttp/qhttpheaders.hpp"
 #include "qsocket.hpp"
+
 #include <QHostAddress>
 #include <QBasicTimer>
 
@@ -24,8 +27,8 @@ namespace details {
 
 struct HttpBase
 {
-    QString     iversion;
-    THeaderHash iheaders;
+    QString iversion;
+    Headers iheaders;
 }; // struct HttpBase
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,5 @@
 TEMPLATE = subdirs
 
-APPNAME=qhttp
 SUBDIRS += src
 SUBDIRS += example
 
@@ -14,6 +13,3 @@ OTHER_FILES += \
     README.md \
     changelogs.md \
 
-include($$PWD/vendor/qompote.pri)
-$$setBuildDir()
-message("$$APPNAME [ build folder is $$OBJECTS_DIR ]")

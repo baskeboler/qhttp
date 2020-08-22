@@ -1,6 +1,6 @@
-#include "qhttpserver.hpp"
-#include "qhttpserverresponse.hpp"
-#include "qhttpserverrequest.hpp"
+#include "qhttp/qhttpserver.hpp"
+#include "qhttp/qhttpserverresponse.hpp"
+#include "qhttp/qhttpserverrequest.hpp"
 
 #include <QCoreApplication>
 
@@ -16,9 +16,7 @@ int main(int argc, char ** argv) {
     }
 
     QCoreApplication app(argc, argv);
-#if defined(Q_OS_UNIX)
-    catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
-#endif
+    catchDefaultOsSignals();
 
     using namespace qhttp::server;
     QHttpServer server(&app);
@@ -30,7 +28,7 @@ int main(int argc, char ** argv) {
             res->setStatusCode(qhttp::ESTATUS_OK);
             res->addHeader("connection", "close"); // optional header (added by default)
 
-            int size = req->collectedData().size();
+            int size = req->body().size();
             auto message = [size]() -> QByteArray {
                 if ( size == 0 )
                     return "Hello World!\n";
@@ -45,7 +43,7 @@ int main(int argc, char ** argv) {
             if ( size > 0 ) { // dump the incoming data into a file
                 QFile f("dump.bin");
                 if ( f.open(QFile::WriteOnly) )
-                    f.write(req->collectedData());
+                    f.write(req->body());
             }
         });
     });

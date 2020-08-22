@@ -29,7 +29,7 @@ QHttpServer::sslConfig() const {
 }
 
 bool
-QHttpServer::listen(const QString &socketOrPort, const TServerHandler &handler) {
+QHttpServer::listen(const QString &socketOrPort, const ServerHandler &handler) {
     Q_D(QHttpServer);
 
     bool isNumber   = false;
@@ -43,7 +43,7 @@ QHttpServer::listen(const QString &socketOrPort, const TServerHandler &handler) 
 }
 
 bool
-QHttpServer::listen(const QHostAddress& address, quint16 port, const qhttp::server::TServerHandler& handler) {
+QHttpServer::listen(const QHostAddress& address, quint16 port, const ServerHandler& handler) {
     Q_D(QHttpServer);
 
     d->initialize(ETcpSocket, this);
