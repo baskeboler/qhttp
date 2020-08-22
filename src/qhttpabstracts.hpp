@@ -25,8 +25,11 @@ public:
     /** returns the standard message for an HTTP status code. */
     static const char* toString(TStatusCode);
 
-    /** returns the standars name of an HTTP method. */
+    /** returns the standard name of an HTTP method. */
     static const char* toString(THttpMethod);
+
+    /// returns the IPv4 format
+    static QString toStringV4(const QHostAddress&);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

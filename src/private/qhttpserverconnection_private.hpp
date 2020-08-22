@@ -14,6 +14,7 @@
 #include "httpparser.hxx"
 #include "qhttpserverrequest.hpp"
 #include "qhttpserverresponse.hpp"
+#include "qhttpsslsocket.hpp"
 
 #include "private/qhttpserverrequest_private.hpp"
 #include "private/qhttpserverresponse_private.hpp"
@@ -32,7 +33,8 @@ class QHttpConnectionPrivate  :
     Q_DECLARE_PUBLIC(QHttpConnection)
 
 public:
-    explicit QHttpConnectionPrivate(QHttpConnection* q) : q_ptr(q) {
+ explicit QHttpConnectionPrivate(QHttpConnection* q, QHttpServer* server)
+     : q_ptr(q), iserver(server) {
 
         QObject::connect(
             q_func(), &QHttpConnection::disconnected,
@@ -109,26 +111,36 @@ public:
 
 private:
     void initTcpSocket(qintptr sokDesc) {
-        QTcpSocket* sok    = new QTcpSocket( q_func() );
-        isocket.itcpSocket = sok;
-        sok->setSocketDescriptor(sokDesc);
+        const auto& sslConfig = iserver->sslConfig();
+        if (sslConfig.hasLocal()) {
+            auto sslsok = new ssl::Socket(q_func());
+            sslsok->setup(sslConfig);
+            sslsok->setSocketDescriptor(sokDesc);
+            sslsok->startServerEncryption();
+            sslsok->setPeerVerifyMode(QSslSocket::VerifyNone);
+            isocket.itcpSocket = sslsok;
 
+        } else {
+            QTcpSocket* sok = new QTcpSocket(q_func());
+            sok->setSocketDescriptor(sokDesc);
+            isocket.itcpSocket = sok;
+        }
+
+        QObject::connect(isocket.itcpSocket, &QTcpSocket::readyRead, [this]() {
+            onReadyRead();
+        });
         QObject::connect(
-                sok,  &QTcpSocket::readyRead,
-                [this](){ onReadyRead(); }
-                );
+            isocket.itcpSocket, &QTcpSocket::bytesWritten, [this]() {
+                auto btw = isocket.itcpSocket->bytesToWrite();
+                if (btw == 0 && ilastResponse)
+                    emit ilastResponse->allBytesWritten();
+        });
         QObject::connect(
-                sok,  &QTcpSocket::bytesWritten,
-                [this](){
-                    auto btw = isocket.itcpSocket->bytesToWrite();
-                    if ( btw == 0  &&  ilastResponse )
-                        emit ilastResponse->allBytesWritten();
-                });
-        QObject::connect(
-                sok,      &QTcpSocket::disconnected,
-                q_func(), &QHttpConnection::disconnected,
-                Qt::QueuedConnection
-                );
+            isocket.itcpSocket,
+            &QTcpSocket::disconnected,
+            q_func(),
+            &QHttpConnection::disconnected,
+            Qt::QueuedConnection);
     }
 
     void initLocalSocket(qintptr sokDesc) {
@@ -136,12 +148,10 @@ private:
         isocket.ilocalSocket = sok;
         sok->setSocketDescriptor(sokDesc);
 
-        QObject::connect(
-                sok, &QLocalSocket::readyRead,
-                [this](){ onReadyRead(); }
-                );
-        QObject::connect(
-                sok, &QLocalSocket::bytesWritten,
+        QObject::connect(sok, &QLocalSocket::readyRead, [this]() {
+            onReadyRead();
+        });
+        QObject::connect(sok, &QLocalSocket::bytesWritten,
                 [this](){
                     auto btw = isocket.ilocalSocket->bytesToWrite();
                     if ( btw == 0  &&  ilastResponse )
@@ -156,6 +166,7 @@ private:
 
 protected:
     QHttpConnection* const q_ptr;
+    QHttpServer* const     iserver;
 
     QByteArray             itempUrl;
 

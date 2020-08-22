@@ -153,7 +153,9 @@ QHttpConnectionPrivate::headersComplete(http_parser* parser) {
 
     // set client information
     if ( isocket.ibackendType == ETcpSocket ) {
-        if (!this->iproxyHeader.isEmpty() && ilastRequest->d_func()->iheaders.contains(this->iproxyHeader))
+        if (!this->iproxyHeader.isEmpty()
+                && ilastRequest->d_func()->iheaders.contains(this->iproxyHeader)
+                && isocket.itcpSocket->peerAddress().isLoopback())
             ilastRequest->d_func()->iremoteAddress = ilastRequest->d_func()->iheaders.value(this->iproxyHeader);
         else
             ilastRequest->d_func()->iremoteAddress = isocket.itcpSocket->peerAddress().toString();

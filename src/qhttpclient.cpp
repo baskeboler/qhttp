@@ -94,7 +94,7 @@ QHttpClient::request(THttpMethod method, QUrl url,
             d->ireqHandler = reqHandler;
         else
             d->ireqHandler = [](QHttpRequest* req) ->void {
-                req->addHeader("connection", "close");
+                req->addHeader("Connection", "close");
                 req->end();
             };
     }
@@ -164,6 +164,17 @@ QHttpClient::onResponseReady(QHttpResponse *res) {
     emit newResponse(res);
 }
 
+const QByteArray&
+QHttpClient::replyData() {
+    Q_D(QHttpClient);
+    return d->isocket.lastReadData;
+}
+
+const QByteArray&
+QHttpClient::requestData() {
+    return d_ptr->ilastRequest->d_ptr->isocket.lastWrittenData;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 // if server closes the connection, ends the response or by any other reason
@@ -208,8 +219,8 @@ QHttpClientPrivate::headerField(http_parser*, const char* at, size_t length) {
     if ( !itempHeaderField.isEmpty() && !itempHeaderValue.isEmpty() ) {
         // header names are always lower-cased
         ilastResponse->d_func()->iheaders.insert(
-                    itempHeaderField.toLower(),
-                    itempHeaderValue.toLower()
+                    itempHeaderField,
+                    itempHeaderValue
                     );
         // clear header value. this sets up a nice
         // feedback loop where the next time
@@ -236,8 +247,8 @@ QHttpClientPrivate::headersComplete(http_parser*) {
 
     // Insert last remaining header
     ilastResponse->d_func()->iheaders.insert(
-                itempHeaderField.toLower(),
-                itempHeaderValue.toLower()
+                itempHeaderField,
+                itempHeaderValue
                 );
 
     if ( irespHandler )

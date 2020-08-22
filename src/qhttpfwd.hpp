@@ -20,6 +20,7 @@ class QTcpServer;
 class QTcpSocket;
 class QLocalServer;
 class QLocalSocket;
+class QHostAddress;
 
 // http_parser
 struct http_parser_settings;

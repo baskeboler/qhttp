@@ -40,7 +40,8 @@ SOURCES  += \
     qhttpserverconnection.cpp \
     qhttpserverrequest.cpp \
     qhttpserverresponse.cpp \
-    qhttpserver.cpp
+    qhttpserver.cpp \
+    qhttpsslsocket.cpp
 
 PUBLIC_HEADERS  += \
     qhttpfwd.hpp \
@@ -48,7 +49,9 @@ PUBLIC_HEADERS  += \
     qhttpserverconnection.hpp \
     qhttpserverrequest.hpp \
     qhttpserverresponse.hpp \
-    qhttpserver.hpp
+    qhttpserver.hpp \
+    qhttpsslconfig.hpp \
+    qhttpsslsocket.hpp
 
 contains(DEFINES, QHTTP_HAS_CLIENT) {
     SOURCES += \

@@ -34,6 +34,9 @@ public:
 
         if ( ilocalSocket )
             ilocalSocket->close();
+
+	lastWrittenData.clear();
+	lastReadData.clear();
     }
 
     inline void release() {
@@ -46,6 +49,9 @@ public:
 
         itcpSocket   = nullptr;
         ilocalSocket = nullptr;
+
+	lastWrittenData.clear();
+	lastReadData.clear();
     }
 
     inline void flush() {
@@ -161,6 +167,8 @@ public:
     QTcpSocket*       itcpSocket   = nullptr;
     QLocalSocket*     ilocalSocket = nullptr;
     QWebSocketServer* iwebSocket   = nullptr;
+    QByteArray lastWrittenData;
+    QByteArray lastReadData;
 }; // class QSocket
 
 ///////////////////////////////////////////////////////////////////////////////

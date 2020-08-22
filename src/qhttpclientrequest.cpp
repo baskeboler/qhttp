@@ -81,12 +81,16 @@ QHttpRequestPrivate::makeTitle() {
 void
 QHttpRequestPrivate::prepareHeadersToWrite() {
 
-    if ( !iheaders.contains("host") ) {
-        quint16 port = iurl.port();
-        if ( port == 0 )
-            port = 80;
+    if ( !iheaders.contains("Host") ) {
+        int port = iurl.port();
+        if ( port == -1 || port == 0 ) {
+            if ( iurl.scheme().toLower() == QString("http") )
+                port = 80; // HTTP
+            else
+                port = 443; // HTTPS
+        }
 
-        iheaders.insert("host",
+        iheaders.insert("Host",
                         QString("%1:%2").arg(iurl.host()).arg(port).toLatin1()
                         );
     }
