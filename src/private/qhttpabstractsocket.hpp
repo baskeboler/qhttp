@@ -114,13 +114,13 @@ public:
   virtual quint16 remotePort() = 0;
 
 public:
-  QIODevice *isocket;
+  QIODevice *isocket = nullptr;
 
 public:
   TBackend ibackendType = ETcpSocket;
-  QTcpSocket *itcpSocket = nullptr;
-  QLocalSocket *ilocalSocket = nullptr;
-  QWebSocket *iwebSocket = nullptr;
+  // QTcpSocket *itcpSocket = nullptr;
+  // QLocalSocket *ilocalSocket = nullptr;
+  // QWebSocket *iwebSocket = nullptr;
   QByteArray lastWrittenData;
   QByteArray lastReadData;
 }; // class QHttpAbstractSocket

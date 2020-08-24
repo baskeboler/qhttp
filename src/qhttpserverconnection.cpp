@@ -139,6 +139,9 @@ int QHttpConnectionPrivate::headersComplete(http_parser *parser) {
                                           itempHeaderValue);
 
   // set client information
+  ilastRequest->d_func()->iremoteAddress = isocket->remoteAddress();
+  ilastRequest->d_func()->iremotePort = isocket->remotePort();
+#if 0
   if (isocket->ibackendType == ETcpSocket) {
     if (!this->iproxyHeader.isEmpty() &&
         ilastRequest->d_func()->iheaders.contains(this->iproxyHeader) &&
@@ -155,6 +158,7 @@ int QHttpConnectionPrivate::headersComplete(http_parser *parser) {
         isocket->ilocalSocket->fullServerName();
     ilastRequest->d_func()->iremotePort = 0; // not used in local sockets
   }
+#endif
 
   if (ilastResponse)
     ilastResponse->deleteLater();
@@ -176,11 +180,13 @@ int QHttpConnectionPrivate::headersComplete(http_parser *parser) {
     // We need to rollback data to pass to QWebSocketServer.
     isocket->rollbackTransaction();
 
-    emit q_ptr->newWebsocketUpgrade(isocket->itcpSocket);
+    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(isocket->isocket);
+    emit q_ptr->newWebsocketUpgrade(
+        static_cast<QTcpSocket *>(isocket->isocket));
 
     // Remove parenting and references
-    isocket->itcpSocket->setParent(nullptr);
-    isocket->itcpSocket = nullptr;
+    isocket->isocket->setParent(nullptr);
+    isocket->isocket = nullptr;
     this->release();
 
     return 0;

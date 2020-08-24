@@ -10,12 +10,13 @@
 #define QHTTPSERVER_CONNECTION_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "httpparser.hxx"
+#include "qhttpsslsocket.hpp"
 #include "qhttpserver.hpp"
+
 #include "qhttpserverconnection.hpp"
+#include "httpparser.hxx"
 #include "qhttpserverrequest.hpp"
 #include "qhttpserverresponse.hpp"
-#include "qhttpsslsocket.hpp"
 
 #include "private/qhttpserverrequest_private.hpp"
 #include "private/qhttpserverresponse_private.hpp"
@@ -48,6 +49,26 @@ public:
 
   virtual ~QHttpConnectionPrivate() = default;
 
+
+   void createSocket(qintptr sokDesc) {
+    isocket->init(
+        q_func(), sokDesc, [this]() { onReadyRead(); },
+        [this]() { onWriteReady(); },
+        [this]() { emit q_func()->disconnected(); });
+
+/*
+    if (isocket->ibackendType == ETcpSocket) {
+      QTcpSocket *sok = new QTcpSocket(q_func());
+      sok->setSocketDescriptor(sokDesc);
+      isocket->itcpSocket = sok;
+    } else if (isocket->ibackendType == ELocalSocket) {
+      QLocalSocket *sok = new QLocalSocket(q_func());
+      sok->setSocketDescriptor(sokDesc);
+      isocket->ilocalSocket = sok;
+    }
+*/
+  }
+
 #if 0
   void createSocket(qintptr sokDesc, TBackend bend) {
     isocket.ibackendType = bend;
@@ -60,22 +81,6 @@ public:
     }
    }
 #endif
-
-  void createSocket(qintptr sokDesc) {
-    if (isocket->ibackendType == ETcpSocket) {
-      QTcpSocket *sok = new QTcpSocket(q_func());
-      sok->setSocketDescriptor(sokDesc);
-      isocket->itcpSocket = sok;
-    } else if (isocket->ibackendType == ELocalSocket) {
-      QLocalSocket *sok = new QLocalSocket(q_func());
-      sok->setSocketDescriptor(sokDesc);
-      isocket->ilocalSocket = sok;
-    }
-    isocket->init(
-        q_func(), sokDesc, [this]() { onReadyRead(); },
-        [this]() { onWriteReady(); },
-        [this]() { emit q_func()->disconnected(); });
-  }
 
   void release() {
     // if socket drops and http_parser can not call
@@ -99,9 +104,9 @@ public:
   }
 
 public:
-  void onReadyRead() {
-    while (isocket->bytesAvailable() > 0) {
-      QByteArray buffer(isocket->readRaw());
+    void onReadyRead() {
+        while (isocket->bytesAvailable() > 0) {
+          QByteArray buffer(isocket->readRaw());
 
       parse(buffer.constData(), buffer.size());
       if (iparser.http_errno != 0) {
@@ -137,6 +142,19 @@ public:
   int body(http_parser *parser, const char *at, size_t length);
   int messageComplete(http_parser *parser);
 
+
+protected:
+  QHttpConnection *const q_ptr;
+  QHttpServer *const iserver;
+
+  QByteArray itempUrl;
+
+  // Since there can only be one request/response pair per connection at any
+  // time even with pipelining.
+  QHttpRequest *ilastRequest = nullptr;
+  QHttpResponse *ilastResponse = nullptr;
+
+  ServerHandler ihandler = nullptr;
 private:
 #if 0
   void initTcpSocket(qintptr sokDesc) {
@@ -197,18 +215,6 @@ private:
         });
     }
 #endif
-protected:
-  QHttpConnection *const q_ptr;
-  QHttpServer *const iserver;
-
-  QByteArray itempUrl;
-
-  // Since there can only be one request/response pair per connection at any
-  // time even with pipelining.
-  QHttpRequest *ilastRequest = nullptr;
-  QHttpResponse *ilastResponse = nullptr;
-
-  ServerHandler ihandler = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

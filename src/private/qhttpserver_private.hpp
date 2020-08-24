@@ -71,8 +71,8 @@ public:
 
   void initialize(TBackend backend, QHttpServer *parent) {
     ibackend = backend;
-    iwsServer.moveToThread(parent->thread());
-    iwsServer.setParent(parent);
+    // iwsServer.moveToThread(parent->thread());
+    // iwsServer.setParent(parent);
 
     if (ibackend == ETcpSocket) {
       ilocalServer.reset(nullptr);

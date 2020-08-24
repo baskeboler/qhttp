@@ -29,7 +29,7 @@ HEADERS  += \
     $$QHTTP_INC_DIR_2/qhttpserverresponse.hpp \
     $$QHTTP_INC_DIR_2/qhttpserver.hpp
 
-
+DEFINES+=QHTTP_HAS_SSL
 contains(DEFINES, QHTTP_HAS_SSL) {
 HEADERS  += \
     $$QHTTP_INC_DIR_2/qhttpsslconfig.hpp \

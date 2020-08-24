@@ -11,11 +11,10 @@
 
 #include "qhttpfwd.hpp"
 
-#include "qhttpabstractsocket.hpp"
 #include "qhttpheaders.hpp"
-
-#include <QBasicTimer>
+#include "qhttpabstractsocket.hpp"
 #include <QHostAddress>
+#include <QBasicTimer>
 
 #include "http-parser/http_parser.h"
 
