@@ -18,7 +18,7 @@ QHttpServer::QHttpServer(QHttpServerPrivate &dd, QObject *parent)
 }
 
 QHttpServer::~QHttpServer() { stopListening(); }
-
+#if defined(QHTTP_HAS_SSL)
 void QHttpServer::setSslConfig(ssl::Config scnf) {
   d_func()->isslConfig = std::move(scnf);
 }
@@ -26,7 +26,7 @@ void QHttpServer::setSslConfig(ssl::Config scnf) {
 const ssl::Config &QHttpServer::sslConfig() const {
   return d_func()->isslConfig;
 }
-
+#endif
 bool QHttpServer::listen(const QString &socketOrPort,
                          const ServerHandler &handler) {
   Q_D(QHttpServer);

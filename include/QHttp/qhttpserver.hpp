@@ -16,9 +16,11 @@
 #include <QObject>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
+#if defined(QHTTP_HAS_SSL)
 namespace ssl {
 struct Config;
 }
+#endif
 namespace server {
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -34,9 +36,11 @@ public:
 
   virtual ~QHttpServer();
 
+#if defined(QHTTP_HAS_SSL)
   /// configure TLS/SSL properties of the server
   void setSslConfig(ssl::Config);
   auto sslConfig() const -> const ssl::Config &;
+#endif
 
   /** starts a TCP or Local (unix domain socket) server.
    * if you provide a server handler, the newRequest() signal won't be
