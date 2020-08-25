@@ -24,13 +24,13 @@ SOURCES  += \
 
 
 DIST_HEADERS  += \
-    qhttpfwd.hpp \
-    qhttpabstracts.hpp \
-    qhttpserverconnection.hpp \
-    qhttpserverrequest.hpp \
-    qhttpserverresponse.hpp \
-    qhttpserver.hpp \
-    QHttpServer
+    $$PRJDIR/include/QHttp/qhttpfwd.hpp \
+    $$PRJDIR/include/QHttp/qhttpabstracts.hpp \
+    $$PRJDIR/include/QHttp/qhttpserverconnection.hpp \
+    $$PRJDIR/include/QHttp/qhttpserverrequest.hpp \
+    $$PRJDIR/include/QHttp/qhttpserverresponse.hpp \
+    $$PRJDIR/include/QHttp/qhttpserver.hpp \
+    $$PRJDIR/include/QHttp/QHttpServer
 
 
 contains(DEFINES, QHTTP_HAS_CLIENT) {
@@ -39,6 +39,11 @@ contains(DEFINES, QHTTP_HAS_CLIENT) {
         qhttpclientresponse.cpp \
         qhttpclient.cpp
 
+    DIST_HEADERS += \
+        $$PRJDIR/include/QHttp/qhttpclient.hpp \
+        $$PRJDIR/include/QHttp/qhttpclientresponse.hpp \
+        $$PRJDIR/include/QHttp/qhttpclientrequest.hpp \
+        $$PRJDIR/include/QHttp/QHttpClient
 
 }
 
@@ -60,11 +65,6 @@ unix:!mac {
     QMAKE_PKGCONFIG_VERSION = 2.0.0
     QMAKE_PKGCONFIG_DESTDIR = pkgconfig
 
-    DIST_HEADERS += \
-        qhttpclient.hpp \
-        qhttpclientresponse.hpp \
-        qhttpclientrequest.hpp \
-        QHttpClient
 }
 
 PRIVATE_HEADERS += \

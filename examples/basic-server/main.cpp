@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QLocale>
 #include <QThread>
+#include <QWebSocket>
 #include <QtCore/QCoreApplication>
 
 #include "QHttp/QHttpServer"
@@ -83,6 +84,42 @@ protected:
   quint64 iconnectionId;
 };
 
+class ClientWsHandler : public QObject {
+public:
+    explicit ClientWsHandler(QObject *parent = nullptr)
+        :QObject(parent)
+    {
+
+    }
+    virtual ~ClientWsHandler(){}
+
+public slots:
+    void onNewWsConnection(QWebSocket *socket)
+    {
+        qDebug() << "onNewWsConnection";
+        QObject::connect(socket, &QWebSocket::connected, this, onWsConnected);
+        connect(socket, &QWebSocket::disconnected, this, onWsDisconnected);
+        connect(socket, &QWebSocket::textMessageReceived, this, onWsTextMessageReceived );
+    }
+    void onWsConnected()
+    {
+        qDebug() << "onWsConnected";
+    }
+    void onWsDisconnected()
+    {
+        qDebug() << "onWsDisconnected";
+    }
+    void onWsTextMessageReceived(const QString &message)
+    {
+        QWebSocket* ws = qobject_cast<QWebSocket *>(sender());
+        qDebug() << "onWsTextMessageReceived" << message;
+        // Echo
+        if (ws != nullptr) {
+            ws->sendTextMessage(message);
+        }
+    }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,6 +136,8 @@ int main(int argc, char **argv) {
     portOrUnixSocket = argv[1];
 
   QHttpServer server(&app);
+  ClientWsHandler wsHandler(&server);
+  QObject::connect(&server, &QHttpServer::newWsConnection,&wsHandler,&ClientWsHandler::onNewWsConnection);
   server.listen(portOrUnixSocket, [&](QHttpRequest *req, QHttpResponse *res) {
     new ClientHandler(++iconnectionCounter, req, res);
     // this ClientHandler object will be deleted automatically when:

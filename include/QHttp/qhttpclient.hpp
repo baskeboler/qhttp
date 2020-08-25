@@ -22,8 +22,8 @@
 namespace qhttp {
 namespace client {
 ///////////////////////////////////////////////////////////////////////////////
-using TRequestHandler = std::function<void(QHttpRequest *)>;
-using TResponseHandler = std::function<void(QHttpResponse *)>;
+using TRequestHandler = std::function<void (QHttpRequest*)>;
+using TResponseHandler = std::function<void (QHttpResponse*)>;
 
 /** a simple and async HTTP client class which sends a request to an HTTP
  * server and parses the corresponding response.
@@ -32,7 +32,8 @@ using TResponseHandler = std::function<void(QHttpResponse *)>;
  * or keep their pointers.  in fact the QHttpRequest and QHttpResponse object
  * will be deleted when the internal socket disconnects.
  */
-class QHTTP_API QHttpClient : public QObject {
+class QHTTP_API QHttpClient : public QObject
+{
   Q_OBJECT
 
   Q_PROPERTY(quint32 timeOut READ timeOut WRITE setTimeOut)
@@ -137,13 +138,13 @@ public:
   TBackend backendType() const;
 
   /** returns tcp socket of the connection if backend() == ETcpSocket. */
-  QTcpSocket *tcpSocket() const;
+  QTcpSocket* tcpSocket() const;
 
   /** returns local socket of the connection if backend() == ELocalSocket. */
-  QLocalSocket *localSocket() const;
+  QLocalSocket* localSocket() const;
 
   /** returns connected socket as an abstract socket (used internally) */
-  details::QHttpAbstractSocket *abstractSocket() const;
+  details::QHttpAbstractSocket* abstractSocket() const;
 
   const QByteArray &replyData();
 
@@ -190,8 +191,8 @@ protected:
   virtual void onResponseReady(QHttpResponse *res);
 
 protected:
-  explicit QHttpClient(QHttpClientPrivate &, QObject *);
-  void timerEvent(QTimerEvent *) override;
+  explicit QHttpClient(QHttpClientPrivate&, QObject*);
+  void timerEvent(QTimerEvent*) override;
 
   Q_DECLARE_PRIVATE(QHttpClient)
   Q_DISABLE_COPY(QHttpClient)

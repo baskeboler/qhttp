@@ -9,6 +9,7 @@ PRJDIR       = ../..
 include(../qmake/configs.pri)
 include(../qhttp.pri)
 INCLUDEPATH += $$PWD/../include
+INCLUDEPATH += $$PWD/../include/QHttp
 INCLUDEPATH += $$PWD/../src
 
 #equals(ENABLE_QHTTP_CLIENT, "1") {

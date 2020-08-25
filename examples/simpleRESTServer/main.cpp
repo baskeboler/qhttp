@@ -3,7 +3,7 @@
 #include <QLocale>
 
 #include "QHttp/QHttpServer"
-
+#include "qhttpheaders.hpp"
 #include "../include/unixcatcher.hpp"
 
 namespace {

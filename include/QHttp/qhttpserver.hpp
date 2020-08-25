@@ -16,16 +16,15 @@
 #include <QObject>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
-#if defined(QHTTP_HAS_SSL)
 namespace ssl {
 struct Config;
 }
-#endif
 namespace server {
 ///////////////////////////////////////////////////////////////////////////////
 
 /** The QHttpServer class is a fast, async (non-blocking) HTTP server. */
-class QHTTP_API QHttpServer : public QObject {
+class QHTTP_API QHttpServer : public QObject
+{
   Q_OBJECT
   Q_PROPERTY(quint32 timeOut READ timeOut WRITE setTimeOut)
 
@@ -35,11 +34,9 @@ public:
 
   virtual ~QHttpServer();
 
-#if defined(QHTTP_HAS_SSL)
   /// configure TLS/SSL properties of the server
   void setSslConfig(ssl::Config);
   auto sslConfig() const -> const ssl::Config &;
-#endif
 
   /** starts a TCP or Local (unix domain socket) server.
    * if you provide a server handler, the newRequest() signal won't be
@@ -115,10 +112,10 @@ protected slots:
 
 protected:
   /// returns the tcp server instance if the backend() == ETcpSocket
-  QTcpServer *tcpServer() const;
+  QTcpServer* tcpServer() const;
 
   /// returns the local server instance if the backend() == ELocalSocket
-  QLocalServer *localServer() const;
+  QLocalServer* localServer() const;
 
   /** is called when server accepts a new connection.
    * you can override this function for using a thread-pool or ... some other
@@ -149,7 +146,7 @@ protected:
   void onWebsocketUpgrade(QTcpSocket *socket);
 
 private:
-  explicit QHttpServer(QHttpServerPrivate &, QObject *parent);
+  explicit QHttpServer(QHttpServerPrivate &, QObject *parent = nullptr);
 
   Q_DECLARE_PRIVATE(QHttpServer)
   Q_DISABLE_COPY(QHttpServer)

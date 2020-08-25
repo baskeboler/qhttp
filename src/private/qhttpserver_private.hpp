@@ -59,9 +59,7 @@ public:
 
   QByteArray iproxyHeader;
 
-#ifdef QHTTP_HAS_SSL
   ssl::Config isslConfig;
-#endif
 
 public:
   explicit QHttpServerPrivate()

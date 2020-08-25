@@ -8,6 +8,7 @@
 #include <QTimer>
 
 #include "QHttp/QHttpServer"
+#include "qhttpheaders.hpp"
 #if defined(QHTTP_HAS_CLIENT)
 #include "QHttp/QHttpClient"
 #endif

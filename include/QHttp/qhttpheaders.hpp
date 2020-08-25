@@ -53,8 +53,7 @@ public:
     return TempHash;
   }
 
-#if 0
-    HeaderHash fromVariant(const QVariant& _value){
+    Headers fromVariant(const QVariant& _value){
       if(_value.canConvert<QVariantHash>()){
         QVariantHash TempHash = _value.value<QVariantHash>();
         this->clear();
@@ -65,7 +64,6 @@ public:
       }else
         throw exQHttpBase("specified value can not be converted to QVariantHash");
     }
-#endif
 };
 
 ///////////////////////////////////////////////////////////////////////////////

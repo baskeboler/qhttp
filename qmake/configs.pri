@@ -24,5 +24,5 @@ isEqual(TEMPLATE, "lib"){
     DESTDIR      = $$PRJDIR/out/bin
 }
 
-INCLUDEPATH +=  . $$PRJDIR/src $$PRJDIR/3rdParty
+INCLUDEPATH +=  . $$PRJDIR/src $$PRJDIR/3rdParty $$PRJDIR/include $$PRJDIR/include/QHttp
 

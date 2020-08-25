@@ -30,7 +30,7 @@ class QHTTP_API QHttpResponse : public QHttpAbstractInput
     Q_OBJECT
 
 public:
-    virtual ~QHttpResponse();
+    virtual ~QHttpResponse() override;
 
 public: // QHttpAbstractInput methods:
     /** @see QHttpAbstractInput::headers(). */
@@ -44,6 +44,9 @@ public: // QHttpAbstractInput methods:
 
     /** @see QHttpAbstractInput::collectData(). */
     void collectData(int atMost = -1) override;
+
+    /** @see QHttpAbstractInput::collectedData(). */
+    const QByteArray& collectedData()const;
 
     /** @see QHttpAbstractInput::body(). */
     const QByteArray& body()const override;

@@ -28,11 +28,13 @@ namespace details {
  * the main purpose of QHttp was to create a small HTTP server with ability to
  * support UNIX sockets (QLocalSocket)
  */
-class QHttpAbstractSocket {
+class QHttpAbstractSocket
+{
 public:
-  QHttpAbstractSocket(QIODevice *socket) : isocket(socket) {}
+  QHttpAbstractSocket(QIODevice *socket) 
+    : isocket(socket) {}
 
-  QHttpAbstractSocket &operator=(const QHttpAbstractSocket &o) {
+  QHttpAbstractSocket& operator = (const QHttpAbstractSocket &o) {
     isocket = o.isocket;
     return *this;
   }
@@ -56,14 +58,19 @@ public:
     return Q_LIKELY(isocket) ? isocket->read(buffer, maxlen) : 0;
   }
 
-  inline QByteArray readRaw() {
-    return Q_LIKELY(isocket) ? isocket->readAll() : QByteArray();
-  }
-
   void writeRaw(const QByteArray &data) {
     if (Q_LIKELY(isocket))
       isocket->write(data);
   }
+
+  inline QByteArray readRaw() {
+    if (Q_LIKELY(isocket)) {
+        isocket->startTransaction();
+        return isocket->readAll();
+    }
+    return QByteArray();
+  }
+
 
   void disconnectAllQtConnections() {
     if (isocket)
@@ -118,14 +125,12 @@ public:
 
 public:
   TBackend ibackendType = ETcpSocket;
-  // QTcpSocket *itcpSocket = nullptr;
-  // QLocalSocket *ilocalSocket = nullptr;
-  // QWebSocket *iwebSocket = nullptr;
   QByteArray lastWrittenData;
   QByteArray lastReadData;
 }; // class QHttpAbstractSocket
 
-class QHttpTcpSocket : public QHttpAbstractSocket {
+class QHttpTcpSocket : public QHttpAbstractSocket
+{
 public:
   QHttpTcpSocket(QObject *parent = Q_NULLPTR)
       : QHttpAbstractSocket(new QTcpSocket(parent)) {}
@@ -136,30 +141,30 @@ public:
             const std::function<void()> &onReadyRead,
             const std::function<void()> &onWriteReady,
             const std::function<void()> &onDisconnected) override {
-    static_cast<QTcpSocket *>(isocket)->setSocketDescriptor(sockDesc);
+    		static_cast<QTcpSocket*>(isocket)->setSocketDescriptor(sockDesc);
 
-    QObject::connect(static_cast<QTcpSocket *>(isocket), &QTcpSocket::readyRead,
-                     onReadyRead);
-    QObject::connect(static_cast<QTcpSocket *>(isocket),
-                     &QTcpSocket::bytesWritten, onWriteReady);
-    QObject::connect(static_cast<QTcpSocket *>(isocket),
-                     &QTcpSocket::disconnected, parent, onDisconnected,
-                     Qt::QueuedConnection);
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::readyRead, onReadyRead);
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::bytesWritten, onWriteReady);
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::disconnected,
+                         parent, onDisconnected, Qt::QueuedConnection);
   }
 
   void init(const std::function<void()> &onConnected,
             const std::function<void()> &onReadyRead,
             const std::function<void()> &onWriteReady,
             const std::function<void()> &onDisconnected) override {
-    QObject::connect(static_cast<QTcpSocket *>(isocket), &QTcpSocket::connected,
-                     onConnected);
-    QObject::connect(static_cast<QTcpSocket *>(isocket), &QTcpSocket::readyRead,
-                     onReadyRead);
-    QObject::connect(static_cast<QTcpSocket *>(isocket),
-                     &QTcpSocket::bytesWritten, onWriteReady);
-    QObject::connect(static_cast<QTcpSocket *>(isocket),
-                     &QTcpSocket::disconnected, onDisconnected);
-  }
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::connected, onConnected);
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::readyRead, onReadyRead);
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::bytesWritten, onWriteReady);
+        QObject::connect(static_cast<QTcpSocket*>(isocket),
+                         &QTcpSocket::disconnected, onDisconnected);
+    }
 
   inline void flush() override {
     if (Q_LIKELY(isocket))
@@ -202,30 +207,29 @@ public:
             const std::function<void()> &onReadyRead,
             const std::function<void()> &onWriteReady,
             const std::function<void()> &onDisconnected) override {
-    static_cast<QLocalSocket *>(isocket)->setSocketDescriptor(sockDesc);
-
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::readyRead, onReadyRead);
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::bytesWritten, onWriteReady);
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::disconnected, parent, onDisconnected,
-                     Qt::QueuedConnection);
+        static_cast<QLocalSocket *>(isocket)->setSocketDescriptor(sockDesc);
+        QObject::connect(static_cast<QLocalSocket*>(isocket),
+                         &QLocalSocket::readyRead, onReadyRead);
+        QObject::connect(static_cast<QLocalSocket*>(isocket),
+                         &QLocalSocket::bytesWritten, onWriteReady);
+        QObject::connect(static_cast<QLocalSocket*>(isocket),
+                         &QLocalSocket::disconnected, parent, onDisconnected,
+                         Qt::QueuedConnection);
   }
 
   void init(const std::function<void()> &onConnected,
             const std::function<void()> &onReadyRead,
             const std::function<void()> &onWriteReady,
             const std::function<void()> &onDisconnected) override {
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::connected, onConnected);
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::readyRead, onReadyRead);
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::bytesWritten, onWriteReady);
-    QObject::connect(static_cast<QLocalSocket *>(isocket),
-                     &QLocalSocket::disconnected, onDisconnected);
-  }
+        QObject::connect(static_cast<QLocalSocket *>(isocket),
+                         &QLocalSocket::connected, onConnected);
+        QObject::connect(static_cast<QLocalSocket *>(isocket),
+                         &QLocalSocket::readyRead, onReadyRead);
+        QObject::connect(static_cast<QLocalSocket *>(isocket),
+                         &QLocalSocket::bytesWritten, onWriteReady);
+        QObject::connect(static_cast<QLocalSocket *>(isocket),
+                         &QLocalSocket::disconnected, onDisconnected);
+    }
 
   inline void flush() override {
     if (Q_LIKELY(isocket))

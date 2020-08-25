@@ -19,10 +19,11 @@ namespace qhttp {
 ///////////////////////////////////////////////////////////////////////////////
 
 /** a utility class to give the string representation of qhttp types. */
-class QHTTP_API Stringify {
+class QHTTP_API Stringify
+{
 public:
-  /** returns the standard message for an HTTP status code. */
-  static const char *toString(TStatusCode);
+    /** returns the standard message for an HTTP status code. */
+    static const char *toString(TStatusCode);
 
   /** returns the standard name of an HTTP method. */
   static const char *toString(THttpMethod);
@@ -35,7 +36,8 @@ public:
 
 /** an interface for input (incoming) HTTP packets.
  * server::QHttpRequest or client::QHttpResponse inherit from this class. */
-class QHTTP_API QHttpAbstractInput : public QObject {
+class QHTTP_API QHttpAbstractInput : public QObject
+{
   Q_OBJECT
 
 public:
@@ -78,7 +80,7 @@ public:
    * @note if you set this handler, the data() signal won't be emitted
    * anymore.
    */
-  template <class Func> void onData(Func f) {
+  template<class Func> void onData(Func f) {
     QObject::connect(this, &QHttpAbstractInput::data, f);
   }
 
@@ -87,7 +89,7 @@ public:
    * notification.
    * @note if you set this handler, the end() signal won't be emitted anymore.
    */
-  template <class Func> void onEnd(Func f) {
+  template<class Func> void onEnd(Func f) {
     QObject::connect(this, &QHttpAbstractInput::end, f);
   }
 
@@ -104,7 +106,7 @@ public:
   virtual void collectData(int atMost = -1) = 0;
 
   /** returns the collected body requested by collectData(). */
-  virtual const QByteArray &body() const = 0;
+  virtual const QByteArray &body()const = 0;
 
   [[deprecated("use body()")]] const QByteArray &collectedData() const {
     return body();
@@ -120,7 +122,8 @@ public:
 
 /** an interface for output (outgoing) HTTP packets.
  * server::QHttpResponse or client::QHttpRequest inherit from this class. */
-class QHTTP_API QHttpAbstractOutput : public QObject {
+class QHTTP_API QHttpAbstractOutput : public QObject
+{
   Q_OBJECT
 
 public:
@@ -171,20 +174,19 @@ protected:
   Q_DISABLE_COPY(QHttpAbstractOutput)
 };
 
-template <>
-inline void QHttpAbstractOutput::addHeaderValue<int>(const QByteArray &field,
+template<> inline void
+QHttpAbstractOutput::addHeaderValue<int>(const QByteArray &field,
                                                      int value) {
   addHeader(field, QString::number(value).toLatin1());
 }
 
-template <>
-inline void QHttpAbstractOutput::addHeaderValue<size_t>(const QByteArray &field,
+template<> inline void
+QHttpAbstractOutput::addHeaderValue<size_t>(const QByteArray &field,
                                                         size_t value) {
   addHeader(field, QString::number(value).toLatin1());
 }
 
-template <>
-inline void
+template<> inline void
 QHttpAbstractOutput::addHeaderValue<QString>(const QByteArray &field,
                                              QString value) {
   addHeader(field, value.toUtf8());

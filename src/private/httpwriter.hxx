@@ -27,7 +27,7 @@ public:
         if ( ifinished )
             return false;
 
-        TBase::iheaders.insert(field, value);
+        TBase::iheaders.insert(field.toLower(), value);
         return true;
     }
 
@@ -87,6 +87,11 @@ public:
         TImpl* me = static_cast<TImpl*>(this);
         me->prepareHeadersToWrite();
 
+        TBase::iheaders.forEach([this](const auto& cit) {
+            this->writeHeader(cit.key(), cit.value());
+        });
+
+        #if 0
         QHashIterator<QByteArray, QByteArray> cit(TBase::iheaders);
         while (cit.hasNext()) {
             cit.next();
@@ -95,7 +100,7 @@ public:
 
             this->writeHeader(field, value);
         }
-
+		#endif
         isocket->writeRaw("\r\n");
         if ( doFlush )
             isocket->flush();

@@ -23,21 +23,24 @@ namespace qhttp {
 namespace details {
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HttpBase {
+struct HttpBase
+{
   QString iversion;
   Headers iheaders;
 }; // struct HttpBase
 
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HttpRequestBase : public HttpBase {
+struct HttpRequestBase : public HttpBase
+{
   QUrl iurl;
   THttpMethod imethod;
 }; // HttpRequestBase
 
 ///////////////////////////////////////////////////////////////////////////////
 
-struct HttpResponseBase : public HttpBase {
+struct HttpResponseBase : public HttpBase
+{
   TStatusCode istatus = ESTATUS_BAD_REQUEST;
 
   HttpResponseBase() { iversion = "1.1"; }

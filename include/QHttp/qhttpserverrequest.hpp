@@ -22,18 +22,19 @@ namespace server {
  * The class is <b>read-only</b>.
  * @sa QHttpConnection
  */
-class QHTTP_API QHttpRequest : public QHttpAbstractInput {
+class QHTTP_API QHttpRequest : public QHttpAbstractInput
+{
   Q_OBJECT
 
 public:
-  virtual ~QHttpRequest();
+  virtual ~QHttpRequest() override;
 
 public: // QHttpAbstractInput methods:
   /** @see QHttpAbstractInput::headers(). */
-  const Headers &headers() const override;
+  const Headers& headers() const override;
 
   /** @see QHttpAbstractInput::httpVersion(). */
-  const QString &httpVersion() const override;
+  const QString& httpVersion() const override;
 
   /** @see QHttpAbstractInput::isSuccessful(). */
   bool isSuccessful() const override;
@@ -41,12 +42,15 @@ public: // QHttpAbstractInput methods:
   /** @see QHttpAbstractInput::collectData(). */
   void collectData(int atMost = -1) override;
 
+  /** @see QHttpAbstractInput::collectedData(). */
+  const QByteArray& collectedData() const;
+
   /** @see QHttpAbstractInput::body(). */
   virtual const QByteArray &body() const override;
 
 public:
   /** The method used for the request. */
-  THttpMethod method() const;
+  THttpMethod method() const ;
 
   /** Returns the method string for the request.
    * @note This will plainly transform the enum into a string HTTP_GET ->
@@ -55,16 +59,16 @@ public:
 
   /** The complete URL for the request.
    * This includes the path and query string. @sa path(). */
-  const QUrl &url() const;
+  const QUrl& url() const;
 
   /** IP Address of the client in dotted decimal format. */
-  const QString &remoteAddress() const;
+  const QString& remoteAddress() const;
 
   /** Outbound connection port for the client. */
   quint16 remotePort() const;
 
   /** returns the parent QHttpConnection object. */
-  QHttpConnection *connection() const;
+  QHttpConnection* connection() const;
 
   /** an storage to add user defined values usually stored in http-body **/
   void addUserDefinedData(const QString &key, const QString value);

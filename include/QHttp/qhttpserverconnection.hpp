@@ -21,17 +21,16 @@ namespace server {
  * this class controls the HTTP connetion and handles life cycle and the memory
  * management of QHttpRequest and QHttpResponse instances autoamtically.
  */
-class QHTTP_API QHttpConnection : public QObject {
+class QHTTP_API QHttpConnection : public QObject
+{
   Q_OBJECT
 
 public:
-  virtual ~QHttpConnection();
+  virtual ~QHttpConnection() override;
 
   /** set an optional timer event to close the connection. */
   void setTimeOut(quint32 miliSeconds);
 
-  /** Set the proxy header */
-  void setProxyHeader(const QByteArray &header);
 
   /** forcefully kills (closes) a connection. */
   void killConnection();
@@ -45,21 +44,25 @@ public:
   TBackend backendType() const;
 
   /** returns connected socket if the backend() == ETcpSocket. */
-  QTcpSocket *tcpSocket() const;
+  QTcpSocket* tcpSocket() const;
 
   /** returns connected socket if the backend() == ELocalSocket. */
-  QLocalSocket *localSocket() const;
+  QLocalSocket* localSocket() const;
 
   /** returns connected socket as an abstract socket (used internally) */
-  details::QHttpAbstractSocket *abstractSocket() const;
+  details::QHttpAbstractSocket* abstractSocket() const;
 
   /** creates a new QHttpConnection based on arguments. */
-  static QHttpConnection *create(qintptr sokDescriptor, TBackend backendType,
+  static
+    QHttpConnection* create(qintptr sokDescriptor, TBackend backendType,
                                  QHttpServer *parent) {
-    QHttpConnection *conn = new QHttpConnection(parent, backendType);
-    conn->setSocketDescriptor(sokDescriptor);
+        QHttpConnection *conn = new QHttpConnection(parent, backendType);
+        conn->setSocketDescriptor(sokDescriptor);
     return conn;
   }
+
+  /** Set the proxy header */
+  void setProxyHeader(const QByteArray &header);
 
 signals:
   /** emitted when a pair of HTTP request and response are ready to interact.
@@ -75,11 +78,11 @@ signals:
   void newWebsocketUpgrade(QTcpSocket *socket);
 
 protected:
-  explicit QHttpConnection(QHttpServer *parent, TBackend backendType);
+  explicit QHttpConnection(QHttpServer *parent, TBackend backendType = ETcpSocket);
   explicit QHttpConnection(QHttpConnectionPrivate &, QHttpServer *);
 
   void setSocketDescriptor(qintptr sokDescriptor);
-  void timerEvent(QTimerEvent *) override;
+  void timerEvent(QTimerEvent*) override;
   friend class QHttpServer;
 
   Q_DISABLE_COPY(QHttpConnection)
