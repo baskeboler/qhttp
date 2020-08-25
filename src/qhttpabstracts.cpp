@@ -1,3 +1,5 @@
+#include <QHostAddress>
+
 #include "qhttpabstracts.hpp"
 #include "http-parser/http_parser.h"
 #include "private/qhttpabstractsocket.hpp"
@@ -9,7 +11,6 @@
 #include "private/qhttpserverrequest_private.hpp"
 #include "private/qhttpserverresponse_private.hpp"
 
-#include <QHostAddress>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 ///////////////////////////////////////////////////////////////////////////////

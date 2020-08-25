@@ -9,16 +9,19 @@
 #ifndef QHTTPSERVER_PRIVATE_HPP
 #define QHTTPSERVER_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
+#include <QLocalServer>
+#include <QTcpServer>
+#include <QWebSocketServer>
 
 #include "qhttpserver.hpp"
 #include "qhttpserverconnection.hpp"
 #include "qhttpserverrequest.hpp"
 #include "qhttpserverresponse.hpp"
-#include "qhttpsslconfig.hpp"
 
-#include <QLocalServer>
-#include <QTcpServer>
-#include <QWebSocketServer>
+#if defined(QHTTP_HAS_SSL)
+#include "qhttpsslconfig.hpp"
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {
@@ -59,7 +62,9 @@ public:
 
   QByteArray iproxyHeader;
 
+#if defined(QHTTP_HAS_SSL)
   ssl::Config isslConfig;
+#endif
 
 public:
   explicit QHttpServerPrivate()

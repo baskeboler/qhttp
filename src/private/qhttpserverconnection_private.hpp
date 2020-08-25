@@ -10,7 +10,15 @@
 #define QHTTPSERVER_CONNECTION_PRIVATE_HPP
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <QBasicTimer>
+#include <QByteArray>
+#include <QCryptographicHash>
+#include <QFile>
+
+#if defined(QHTTP_HAS_SSL)
 #include "qhttpsslsocket.hpp"
+#endif
+
 #include "qhttpserver.hpp"
 
 #include "qhttpserverconnection.hpp"
@@ -21,10 +29,6 @@
 #include "private/qhttpserverrequest_private.hpp"
 #include "private/qhttpserverresponse_private.hpp"
 
-#include <QBasicTimer>
-#include <QByteArray>
-#include <QCryptographicHash>
-#include <QFile>
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace server {

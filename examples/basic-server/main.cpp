@@ -97,9 +97,9 @@ public slots:
     void onNewWsConnection(QWebSocket *socket)
     {
         qDebug() << "onNewWsConnection";
-        QObject::connect(socket, &QWebSocket::connected, this, onWsConnected);
-        connect(socket, &QWebSocket::disconnected, this, onWsDisconnected);
-        connect(socket, &QWebSocket::textMessageReceived, this, onWsTextMessageReceived );
+        QObject::connect(socket, &QWebSocket::connected, this, &ClientWsHandler::onWsConnected);
+        connect(socket, &QWebSocket::disconnected, this, &ClientWsHandler::onWsDisconnected);
+        connect(socket, &QWebSocket::textMessageReceived, this, &ClientWsHandler::onWsTextMessageReceived );
     }
     void onWsConnected()
     {

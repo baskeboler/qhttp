@@ -10,8 +10,9 @@
 #ifndef __QHTTPSSLSOCKET_HPP__
 #define __QHTTPSSLSOCKET_HPP__
 
-#include "qhttpsslconfig.hpp"
 #include <QSslSocket>
+#include <QSslKey>
+#include "qhttpsslconfig.hpp"
 ///////////////////////////////////////////////////////////////////////////////
 namespace qhttp {
 namespace ssl {
